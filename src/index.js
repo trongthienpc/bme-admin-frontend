@@ -12,15 +12,15 @@ import { StoreProvider } from './context'
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-      {/* <Provider store={store}> */}
-      {/* <AuthContextProvider> */}
-      <StoreProvider>
-        <Routes>
-          <Route path="/*" element={<App />} />
-        </Routes>
-      </StoreProvider>
-      {/* </AuthContextProvider> */}
-      {/* </Provider> */}
+      <Provider store={store}>
+        {/* <AuthContextProvider> */}
+        <StoreProvider>
+          <Routes>
+            <Route path="/*" element={<App />} />
+          </Routes>
+        </StoreProvider>
+        {/* </AuthContextProvider> */}
+      </Provider>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')

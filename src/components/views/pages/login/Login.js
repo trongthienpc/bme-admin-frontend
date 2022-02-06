@@ -14,7 +14,7 @@ import {
   CInputGroupText,
   CRow,
 } from "@coreui/react";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../../context/AuthContext";
 import axios from "axios";
@@ -32,6 +32,8 @@ const Login = () => {
 
   console.log("location: ", location);
 
+  const [alertString, setAlertString] = useState()
+
   // context call api
 
 
@@ -45,6 +47,14 @@ const Login = () => {
 
   const { username, password } = userLogin;
 
+  useEffect(() => {
+    toast(alertString)
+  }, [alertString])
+
+
+  useEffect(() => {
+    setAlertString(null)
+  }, [username, password])
   const handleLogin = (e) => {
     setUserLogin({
       ...userLogin,
@@ -58,19 +68,25 @@ const Login = () => {
       //const loginData = await loginContext(userLogin);
       const response = await axios.post(`${apiUrl}/auth/login`, userLogin)
 
+      if (response.data.success) {
+        toast.success("dang nhap thanh cong")
+      }
       dispatch(actions.login(response.data))
-
       console.log(response.data);
+      navigate("/")
 
-      if (loginStatus) {
-        toast.success(loginMessage)
-        navigate('/');
+    } catch (err) {
+      console.log("error: ", err);
+      if (!err?.response) {
+        setAlertString('No Server Response');
+      } else if (err.response?.status === 400) {
+        setAlertString('Missing Username or Password');
+      } else if (err.response?.status === 401) {
+        setAlertString('Incorrect username and/or password');
+      } else {
+        setAlertString('Login Failed');
       }
-      else {
-        toast.warn(loginMessage)
-      }
-
-    } catch (error) { }
+    }
   };
 
   return (
