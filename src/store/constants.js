@@ -1,0 +1,5 @@
+export const SET_TODO_INPUT = 'set_todo_input'
+export const USER_LOGIN = 'user_login'
+export const USER_REGISTER = 'user_register'
+export const ADD_TODO = 'add_todo'
+export const SET_THEME = 'set_theme'
