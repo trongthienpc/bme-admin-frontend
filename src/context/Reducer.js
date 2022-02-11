@@ -12,6 +12,7 @@ const initState = {
   isAuthenticated: false,
   loginStatus: false,
   loginMessage: "",
+  addMessage: '',
   roomStyles: [],
   roomStyle: {},
 };
@@ -26,9 +27,8 @@ function Reducer(state, action) {
     case ADD_ROOM_STYLE:
       return {
         ...state,
-        roomStyles: [...state.roomStyles, action.payload],
+        addMessage: action.payload.message
       };
-      break;
 
     case LOAD_USER:
       const loadUser = async () => {
