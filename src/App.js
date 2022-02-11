@@ -8,18 +8,18 @@ import RoomStyle from "./components/views/pages/room/roomStyle";
 import RoomDetail from "./components/views/pages/room/roomDetail";
 import Page404 from "./components/views/pages/page404/page404";
 import { useStore } from "./context";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 import "./scss/style.scss";
 import context from "./context/context";
 const DefaultLayout = React.lazy(() => import("./layout/default"));
 
 function RequireAuth({ children }) {
-  const [state, dispatch] = useStore()
+  const [state, dispatch] = useStore();
   console.log("state: ", state);
   // const {
   //   authState: { isAuthenticated },
   // } = useContext(AuthContext);
-  const { isAuthenticated } = state
+  const { isAuthenticated } = state;
   let location = useLocation();
   if (!isAuthenticated) {
     // Redirect them to the /login page, but save the current location they were

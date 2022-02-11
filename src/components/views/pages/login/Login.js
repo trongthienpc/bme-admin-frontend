@@ -1,5 +1,5 @@
 import { cilLockLocked, cilUser } from "@coreui/icons";
-import { toast, ToastContainer } from 'react-toastify'
+import { toast, ToastContainer } from "react-toastify";
 import CIcon from "@coreui/icons-react";
 import {
   CButton,
@@ -18,24 +18,23 @@ import React, { useContext, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../../context/AuthContext";
 import axios from "axios";
-import { useStore, actions } from '../../../../context'
+import { useStore, actions } from "../../../../context";
 import { apiUrl } from "../../../../context/constant";
 const Login = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const from = "/";
 
-  const [state, dispatch] = useStore()
+  const [state, dispatch] = useStore();
 
-  console.log("state: ", state);
-  const { loginStatus, loginMessage } = state
+  // console.log("state: ", state);
+  const { loginStatus, loginMessage } = state;
 
-  console.log("location: ", location);
+  // console.log("location: ", location);
 
-  const [alertString, setAlertString] = useState()
+  const [alertString, setAlertString] = useState();
 
   // context call api
-
 
   // state login
   const [userLogin, setUserLogin] = useState({
@@ -48,13 +47,12 @@ const Login = () => {
   const { username, password } = userLogin;
 
   useEffect(() => {
-    toast(alertString)
-  }, [alertString])
-
+    toast(alertString);
+  }, [alertString]);
 
   useEffect(() => {
-    setAlertString(null)
-  }, [username, password])
+    setAlertString(null);
+  }, [username, password]);
   const handleLogin = (e) => {
     setUserLogin({
       ...userLogin,
@@ -66,25 +64,24 @@ const Login = () => {
     event.preventDefault();
     try {
       //const loginData = await loginContext(userLogin);
-      const response = await axios.post(`${apiUrl}/auth/login`, userLogin)
+      const response = await axios.post(`${apiUrl}/auth/login`, userLogin);
 
       if (response.data.success) {
-        toast.success("dang nhap thanh cong")
+        toast.success("dang nhap thanh cong");
       }
-      dispatch(actions.login(response.data))
+      dispatch(actions.login(response.data));
       console.log(response.data);
-      navigate("/")
-
+      navigate("/");
     } catch (err) {
       console.log("error: ", err);
       if (!err?.response) {
-        setAlertString('No Server Response');
+        setAlertString("No Server Response");
       } else if (err.response?.status === 400) {
-        setAlertString('Missing Username or Password');
+        setAlertString("Missing Username or Password");
       } else if (err.response?.status === 401) {
-        setAlertString('Incorrect username and/or password');
+        setAlertString("Incorrect username and/or password");
       } else {
-        setAlertString('Login Failed');
+        setAlertString("Login Failed");
       }
     }
   };
@@ -170,7 +167,6 @@ const Login = () => {
           </CCol>
         </CRow>
       </CContainer>
-
 
       <ToastContainer />
     </div>
