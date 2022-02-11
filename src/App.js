@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Login from "./components/views/pages/login/Login";
 import Register from "./components/views/pages/register/Register";
@@ -10,7 +10,6 @@ import Page404 from "./components/views/pages/page404/page404";
 import { useStore } from "./context";
 import "react-toastify/dist/ReactToastify.css";
 import "./scss/style.scss";
-import context from "./context/context";
 const DefaultLayout = React.lazy(() => import("./layout/default"));
 
 function RequireAuth({ children }) {

@@ -1,6 +1,6 @@
 import { useReducer } from "react";
 import context from "./context";
-import Reducer, { initState, roomStyleState } from "./Reducer";
+import Reducer, { initState } from "./Reducer";
 
 function Provider({ children }) {
   const [state, dispatch] = useReducer(Reducer, initState);

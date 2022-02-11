@@ -14,21 +14,18 @@ import {
   CInputGroupText,
   CRow,
 } from "@coreui/react";
-import React, { useContext, useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { AuthContext } from "../../../../context/AuthContext";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
 import axios from "axios";
 import { useStore, actions } from "../../../../context";
 import { apiUrl } from "../../../../context/constant";
 const Login = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const from = "/";
 
   const [state, dispatch] = useStore();
 
   // console.log("state: ", state);
-  const { loginStatus, loginMessage } = state;
 
   // console.log("location: ", location);
 
@@ -41,8 +38,6 @@ const Login = () => {
     username: "",
     password: "",
   });
-
-  console.log("userLogin: ", userLogin);
 
   const { username, password } = userLogin;
 
