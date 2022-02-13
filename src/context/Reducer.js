@@ -1,3 +1,5 @@
+
+import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import {
   LOAD_USER,
@@ -5,8 +7,10 @@ import {
   LOGIN,
   apiUrl,
   ADD_ROOM_STYLE,
+  LOAD_ROOM_STYLE,
+  LOGOUT,
+  DELETE_ROOM_STYLE
 } from "./constant";
-import axios from "axios";
 const initState = {
   user: null,
   isAuthenticated: false,
@@ -23,7 +27,23 @@ const roomStyleState = {
 };
 
 function Reducer(state, action) {
+
+
+
   switch (action.type) {
+    case DELETE_ROOM_STYLE:
+      return {
+        ...state,
+        roomStyles: state.roomStyles.filter(room => room._id !== action.payload)
+      }
+
+    case LOAD_ROOM_STYLE:
+
+      return {
+        ...state,
+        roomStyles: action.payload
+      }
+
     case ADD_ROOM_STYLE:
       return {
         ...state,
@@ -31,30 +51,11 @@ function Reducer(state, action) {
       };
 
     case LOAD_USER:
-      const loadUser = async () => {
-        if (localStorage[LOCAL_STORAGE_TOKEN_NAME])
-          setAuthToken(localStorage[LOCAL_STORAGE_TOKEN_NAME]);
-        try {
-          const response = await axios.get(`${apiUrl}/auth`);
-          if (response.data.success) {
-            return {
-              ...state,
-              isAuthenticated: true,
-              user: response.data.user,
-            };
-          }
-        } catch (error) {
-          localStorage.removeItem(LOCAL_STORAGE_TOKEN_NAME);
-          setAuthToken(null);
-          return {
-            ...state,
-            isAuthenticated: false,
-            user: null,
-          };
-        }
-      };
-      loadUser();
-      break;
+      return {
+        ...state,
+        isAuthenticated: action.payload.isAuthenticated,
+        user: action.payload.user
+      }
     case LOGIN:
       return {
         ...state,
@@ -62,11 +63,42 @@ function Reducer(state, action) {
         loginMessage: action.payload.message,
         loginStatus: action.payload.status,
       };
+    case LOGOUT:
+      localStorage.removeItem(LOCAL_STORAGE_TOKEN_NAME)
+      return {
+        ...state,
+        isAuthenticated: false,
+        user: null
+      }
 
     default:
       break;
   }
 }
 
-export { initState, roomStyleState };
+const loadUser = async () => {
+  if (localStorage[LOCAL_STORAGE_TOKEN_NAME])
+    setAuthToken(localStorage[LOCAL_STORAGE_TOKEN_NAME]);
+  try {
+    const response = await axios.get(`${apiUrl}/auth`);
+    if (response.data.success) {
+      return {
+        ...initState,
+        isAuthenticated: true,
+        user: response.data.user,
+      };
+    }
+  } catch (error) {
+    localStorage.removeItem(LOCAL_STORAGE_TOKEN_NAME);
+    setAuthToken(null);
+    return {
+      ...initState,
+      isAuthenticated: false,
+      user: null,
+    };
+  }
+};
+
+
+export { initState, roomStyleState, loadUser };
 export default Reducer;

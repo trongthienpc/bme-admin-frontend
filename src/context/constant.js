@@ -12,6 +12,8 @@ export const FIND_POST = "FIND_POST";
 export const LOGIN = "LOGIN";
 export const REGISTER = "REGISTER";
 export const LOAD_USER = "LOAD_USER";
+export const LOGOUT = 'LOGOUT'
 
 export const LOAD_ROOM_STYLE = "LOAD_ROOM_STYLE";
 export const ADD_ROOM_STYLE = "ADD_ROOM_STYLE";
+export const DELETE_ROOM_STYLE = 'DELETE_ROOM_STYLE'

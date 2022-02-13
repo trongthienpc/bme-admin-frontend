@@ -5,6 +5,7 @@ import CIcon from '@coreui/icons-react'
 import { cilMenu } from '@coreui/icons'
 import { NavLink } from 'react-router-dom';
 import { logo } from '../../src/assets/brand/logo'
+import AppHeaderDropdown from './AppHeaderDropdown';
 
 const AppHeader = () => {
     const dispatch = useDispatch()
@@ -31,6 +32,9 @@ const AppHeader = () => {
                             Users
                         </CNavLink>
                     </CNavItem>
+                </CHeaderNav>
+                <CHeaderNav className="ms-3">
+                    <AppHeaderDropdown />
                 </CHeaderNav>
             </CContainer>
         </CHeader >

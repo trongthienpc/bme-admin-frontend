@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Login from "./components/views/pages/login/Login";
 import Register from "./components/views/pages/register/Register";
@@ -7,20 +7,19 @@ import About from "./components/views/pages/about/about";
 import RoomStyle from "./components/views/pages/room/roomStyle";
 import RoomDetail from "./components/views/pages/room/roomDetail";
 import Page404 from "./components/views/pages/page404/page404";
-import { useStore } from "./context";
+import { actions, useStore } from "./context";
 import "react-toastify/dist/ReactToastify.css";
 import "./scss/style.scss";
+import { apiUrl, LOCAL_STORAGE_TOKEN_NAME } from "./context/constant";
+import setAuthToken from "./utils/setAuthToken";
+import axios from "axios";
+import { loadUser } from "./context/Reducer";
 const DefaultLayout = React.lazy(() => import("./layout/default"));
 
 function RequireAuth({ children }) {
-  const [state, dispatch] = useStore();
-  console.log("state: ", state);
-  // const {
-  //   authState: { isAuthenticated },
-  // } = useContext(AuthContext);
-  const { isAuthenticated } = state;
+  const accessToken = localStorage.getItem([LOCAL_STORAGE_TOKEN_NAME])
   let location = useLocation();
-  if (!isAuthenticated) {
+  if (!accessToken) {
     // Redirect them to the /login page, but save the current location they were
     // trying to go to when they were redirected. This allows us to send them
     // along to that page after they login, which is a nicer user experience
@@ -36,6 +35,12 @@ const loading = (
   </div>
 );
 function App() {
+  const [state, dispatch] = useStore()
+  console.log("state: ", state);
+  useEffect(() => {
+    loadUser()
+  }, [])
+
   // todo app
   // const [storeState, dispatch] = useStore();
   // const { todos, todoInput } = storeState;

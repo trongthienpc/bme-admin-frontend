@@ -15,19 +15,21 @@ import {
   CRow,
 } from "@coreui/react";
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 import axios from "axios";
 import { useStore, actions } from "../../../../context";
-import { apiUrl } from "../../../../context/constant";
+import { apiUrl, LOCAL_STORAGE_TOKEN_NAME } from "../../../../context/constant";
+import setAuthToken from "../../../../utils/setAuthToken";
+import { loadUser } from "../../../../context/Reducer";
+
 const Login = () => {
-  const navigate = useNavigate();
+  let navigate = useNavigate();
+  let location = useLocation();
+
+  let from = location.state?.from?.pathname || "/";
 
   const [state, dispatch] = useStore();
-
-  // console.log("state: ", state);
-
-  // console.log("location: ", location);
 
   const [alertString, setAlertString] = useState();
 
@@ -48,6 +50,7 @@ const Login = () => {
   useEffect(() => {
     setAlertString(null);
   }, [username, password]);
+
   const handleLogin = (e) => {
     setUserLogin({
       ...userLogin,
@@ -63,10 +66,15 @@ const Login = () => {
 
       if (response.data.success) {
         toast.success("dang nhap thanh cong");
+        localStorage.setItem(LOCAL_STORAGE_TOKEN_NAME, response.data.accessToken)
+        dispatch(actions.login(response.data));
       }
-      dispatch(actions.login(response.data));
-      console.log(response.data);
-      navigate("/");
+      await loadUser()
+      // adding
+      //dispatch(actions.loadUser())
+
+      console.log("response.data: ", response.data);
+      navigate(from, { replace: true });
     } catch (err) {
       console.log("error: ", err);
       if (!err?.response) {
@@ -133,7 +141,7 @@ const Login = () => {
                   </CForm>
                 </CCardBody>
               </CCard>
-              <CCard
+              {/* <CCard
                 className="text-white bg-primary py-5"
                 style={{ width: "44%" }}
               >
@@ -157,7 +165,7 @@ const Login = () => {
                     </Link>
                   </div>
                 </CCardBody>
-              </CCard>
+              </CCard> */}
             </CCardGroup>
           </CCol>
         </CRow>
