@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { Form, Button, Col, Image } from "react-bootstrap";
-import { useStore } from "../../../../context";
+import { actions, useStore } from "../../../../context";
 import { addRoomStyle, loadRoomStyle, delRoomStyle } from "../../../../context/actions";
 import { apiUrl } from "../../../../context/constant";
 import { toast, ToastContainer } from "react-toastify";
@@ -14,7 +14,7 @@ const RoomStyle = () => {
 
     const [imageState, setImageState] = useState('');
 
-    const { roomStyles } = state;
+    const { roomStyles, roomStyle } = state;
     // list all room style
     const getRooms = async () => {
         try {
@@ -51,6 +51,64 @@ const RoomStyle = () => {
         max: "persons",
         bed: "bed",
     });
+
+
+    // update room
+    const [updateShow, setUpdateShow] = useState(false)
+    const [oldRoomId, setOldRoomId] = useState('')
+    const [oldRoom, setOldRoom] = useState({})
+
+    const handlEdit = async (id) => {
+        console.log("id:", id);
+        setOldRoomId(id)
+        try {
+
+            const res = await axios.get(`${apiUrl}/rooms/${id}`)
+            if (res.data.success) {
+                console.log("res.data: ", res.data);
+                dispatch(actions.findRoom(res.data))
+                setOldRoom(res.data.room)
+                setImageState(res.data.room.image);
+            }
+        } catch (error) {
+
+        }
+
+        setUpdateShow(true)
+
+    }
+    const handleUpdateChange = (e) => {
+        setOldRoom({
+            ...oldRoom,
+            [e.target.name]: e.target.value
+        })
+    }
+    const handleUpdate = async (e) => {
+        e.preventDefault()
+        try {
+            const formData = new FormData();
+            formData.append("name", oldRoom.name)
+            formData.append("max", oldRoom.max)
+            formData.append("bed", oldRoom.bed)
+            formData.append("description", oldRoom.description)
+            formData.append("image", imageState)
+            console.log("formData: ", formData);
+            const response = await axios.put(`${apiUrl}/rooms/${oldRoomId}`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            })
+            if (response.data.success) {
+                dispatch(actions.updateRoom())
+                setUpdateShow(false)
+                setImageState('')
+                getRooms()
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
 
     const handleChange = (e) => {
         setRoomState({
@@ -89,7 +147,14 @@ const RoomStyle = () => {
                 console.log("Error: ", error);
             }
         }
+        setImageState('')
     };
+
+
+    const handleAdd = () => {
+        setImageState('')
+        setlgShow(true)
+    }
 
 
     // delete room 
@@ -118,13 +183,16 @@ const RoomStyle = () => {
             )
         }
 
+        setImageState('')
+
     }
+
 
 
 
     return (
         <div>
-            <button className="btn btn-secondary mb-2" onClick={() => setlgShow(true)}>Add New</button>
+            <button className="btn btn-secondary mb-2" onClick={() => handleAdd()}>Add New</button>
 
             <Row xs={1} md={2} className="g-4">
                 {roomStyles.map((room, index) => (
@@ -138,7 +206,7 @@ const RoomStyle = () => {
                                 </Card.Text>
                             </Card.Body>
                             <Card.Footer className="d-flex justify-content-between">
-                                <Button className="btn btn-primary m-2">Edit</Button>
+                                <Button className="btn btn-primary m-2" onClick={() => handlEdit(room._id)}>Edit</Button>
                                 <Button className="btn btn-warning m-2" onClick={() => handleDelete(room._id)}>Delete</Button>
                             </Card.Footer>
                         </Card>
@@ -147,7 +215,83 @@ const RoomStyle = () => {
             </Row>
 
 
+            {/* modal update new room */}
+            <Modal size="lg" show={updateShow} onHide={() => setUpdateShow(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>
+                        {/* Update Room */}
+                        {oldRoomId}
+                        {/* <pre>{JSON.stringify(roomState, null, '\t')}</pre> */}
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form
+                        onSubmit={handleUpdate}
+                        method="post"
+                    // encType="multipart/form-data"
+                    >
+                        <Form.Group className="mb-3" controlId="formBasicName">
+                            <Form.Label>Name</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Enter name"
+                                name="name"
+                                value={oldRoom.name}
+                                onChange={handleUpdateChange}
+                            />
+                        </Form.Group>
 
+                        <Form.Group className="mb-3" controlId="formBasicPassword">
+                            <Form.Label>Description</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={3}
+                                name="description"
+                                value={oldRoom.description}
+                                onChange={handleUpdateChange}
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="formBasicMax">
+                            <Form.Label>Max person</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="max"
+                                value={oldRoom.max}
+                                onChange={handleUpdateChange}
+                            />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" controlId="formBasicBed">
+                            <Form.Label>Number formBasicBed</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="bed"
+                                value={oldRoom.bed}
+                                onChange={handleUpdateChange}
+                            />
+                        </Form.Group>
+
+                        <Form.Group controlId="formFile" className="mb-3">
+                            {/* <Form.Label>Image</Form.Label> */}
+                            {/* <Form.Control type="file" name="image" onChange={handleImage} /> */}
+                            <FileBase64
+                                type="file"
+                                multiple={false}
+                                onDone={({ base64 }) => setImageState(base64)} />
+                        </Form.Group>
+
+                        <Image src={imageState} fluid rounded thumbnail className="mb-2" />
+
+                        <Button
+                            variant="primary"
+                            type="submit"
+                            disabled={oldRoom.bed && oldRoom.max && oldRoom.name && oldRoom.description ? false : true}
+                        >
+                            Submit
+                        </Button>
+                    </Form>
+                </Modal.Body>
+            </Modal>
 
             {/* modal add new room */}
             <Modal size="lg" show={lgShow} onHide={() => setlgShow(false)}>
@@ -213,7 +357,7 @@ const RoomStyle = () => {
                                 onDone={({ base64 }) => setImageState(base64)} />
                         </Form.Group>
 
-                        <Image src={imageState} fluid rounded thumbnail className="mb-2" />
+                        <Image src={imageState} fluid rounded thumbnail className="mb-2" hidden={imageState ? false : true} />
 
                         <Button
                             variant="primary"

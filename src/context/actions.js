@@ -5,7 +5,9 @@ import {
   LOGIN,
   LOGOUT,
   REGISTER,
-  DELETE_ROOM_STYLE
+  DELETE_ROOM_STYLE,
+  FIND_ROOM,
+  UPDATE_ROOM
 } from "./constant";
 
 export const login = (payload) => ({
@@ -43,3 +45,12 @@ export const delRoomStyle = (payload) => ({
   payload
 })
 
+export const findRoom = (payload) => ({
+  type: FIND_ROOM,
+  payload
+})
+
+export const updateRoom = (payload) => ({
+  type: UPDATE_ROOM,
+  payload
+})

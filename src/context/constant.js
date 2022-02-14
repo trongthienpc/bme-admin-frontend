@@ -17,3 +17,5 @@ export const LOGOUT = 'LOGOUT'
 export const LOAD_ROOM_STYLE = "LOAD_ROOM_STYLE";
 export const ADD_ROOM_STYLE = "ADD_ROOM_STYLE";
 export const DELETE_ROOM_STYLE = 'DELETE_ROOM_STYLE'
+export const FIND_ROOM = 'FIND_ROOM'
+export const UPDATE_ROOM = 'UPDATE_ROOM'

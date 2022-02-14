@@ -9,7 +9,9 @@ import {
   ADD_ROOM_STYLE,
   LOAD_ROOM_STYLE,
   LOGOUT,
-  DELETE_ROOM_STYLE
+  DELETE_ROOM_STYLE,
+  FIND_ROOM,
+  UPDATE_ROOM
 } from "./constant";
 const initState = {
   user: null,
@@ -31,6 +33,16 @@ function Reducer(state, action) {
 
 
   switch (action.type) {
+    case UPDATE_ROOM:
+      return {
+        ...state,
+        roomStyles: [...state.roomStyles]
+      }
+    case FIND_ROOM:
+      return {
+        ...state,
+        roomStyle: action.payload
+      }
     case DELETE_ROOM_STYLE:
       return {
         ...state,
