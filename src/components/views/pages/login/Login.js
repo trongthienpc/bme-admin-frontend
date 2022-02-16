@@ -15,21 +15,21 @@ import {
   CRow,
 } from "@coreui/react";
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import axios from "axios";
 import { useStore, actions } from "../../../../context";
 import { apiUrl, LOCAL_STORAGE_TOKEN_NAME } from "../../../../context/constant";
-import setAuthToken from "../../../../utils/setAuthToken";
 import { loadUser } from "../../../../context/Reducer";
 
 const Login = () => {
   let navigate = useNavigate();
   let location = useLocation();
 
-  let from = location.state?.from?.pathname || "/";
+  let from = location.state?.from?.pathname || "/roomStyle";
 
   const [state, dispatch] = useStore();
+  // console.log(state);
 
   const [alertString, setAlertString] = useState();
 
@@ -66,14 +66,13 @@ const Login = () => {
 
       if (response.data.success) {
         toast.success("dang nhap thanh cong");
-        localStorage.setItem(LOCAL_STORAGE_TOKEN_NAME, response.data.accessToken)
+        localStorage.setItem(
+          LOCAL_STORAGE_TOKEN_NAME,
+          response.data.accessToken
+        );
         dispatch(actions.login(response.data));
       }
-      await loadUser()
-      // adding
-      //dispatch(actions.loadUser())
-
-      console.log("response.data: ", response.data);
+      await loadUser();
       navigate(from, { replace: true });
     } catch (err) {
       console.log("error: ", err);
@@ -128,7 +127,12 @@ const Login = () => {
                     </CInputGroup>
                     <CRow>
                       <CCol xs={6}>
-                        <CButton color="primary" className="px-4" type="submit">
+                        <CButton
+                          color="primary"
+                          className="px-4"
+                          type="submit"
+                          disabled={password && username ? false : true}
+                        >
                           Login
                         </CButton>
                       </CCol>

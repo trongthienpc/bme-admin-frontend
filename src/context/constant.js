@@ -12,10 +12,18 @@ export const FIND_POST = "FIND_POST";
 export const LOGIN = "LOGIN";
 export const REGISTER = "REGISTER";
 export const LOAD_USER = "LOAD_USER";
-export const LOGOUT = 'LOGOUT'
+export const LOGOUT = "LOGOUT";
 
 export const LOAD_ROOM_STYLE = "LOAD_ROOM_STYLE";
 export const ADD_ROOM_STYLE = "ADD_ROOM_STYLE";
-export const DELETE_ROOM_STYLE = 'DELETE_ROOM_STYLE'
-export const FIND_ROOM = 'FIND_ROOM'
-export const UPDATE_ROOM = 'UPDATE_ROOM'
+export const DELETE_ROOM_STYLE = "DELETE_ROOM_STYLE";
+export const FIND_ROOM = "FIND_ROOM";
+export const UPDATE_ROOM = "UPDATE_ROOM";
+export const HEADERS = {
+  "Content-Type": "multipart/form-data",
+};
+
+export const ADD_SUCC = "Add successfully!";
+export const UPDATE_SUCC = "Update successfully";
+export const DEL_SUCC = "Delete successfully";
+export const SER_ERROR = "Server has an error";

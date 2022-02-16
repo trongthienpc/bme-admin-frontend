@@ -7,26 +7,21 @@ import About from "./components/views/pages/about/about";
 import RoomStyle from "./components/views/pages/room/roomStyle";
 import RoomDetail from "./components/views/pages/room/roomDetail";
 import Page404 from "./components/views/pages/page404/page404";
-import { actions, useStore } from "./context";
 import "react-toastify/dist/ReactToastify.css";
 import "./scss/style.scss";
-import { apiUrl, LOCAL_STORAGE_TOKEN_NAME } from "./context/constant";
-import setAuthToken from "./utils/setAuthToken";
-import axios from "axios";
+import { LOCAL_STORAGE_TOKEN_NAME } from "./context/constant";
+
 import { loadUser } from "./context/Reducer";
+import Blog from "./components/views/pages/blog/blog";
 const DefaultLayout = React.lazy(() => import("./layout/default"));
 
+// check authorized
 function RequireAuth({ children }) {
-  const accessToken = localStorage.getItem([LOCAL_STORAGE_TOKEN_NAME])
+  const accessToken = localStorage.getItem([LOCAL_STORAGE_TOKEN_NAME]);
   let location = useLocation();
   if (!accessToken) {
-    // Redirect them to the /login page, but save the current location they were
-    // trying to go to when they were redirected. This allows us to send them
-    // along to that page after they login, which is a nicer user experience
-    // than dropping them off on the home page.
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
-
   return children;
 }
 const loading = (
@@ -35,11 +30,9 @@ const loading = (
   </div>
 );
 function App() {
-  const [state, dispatch] = useStore()
-  console.log("state: ", state);
   useEffect(() => {
-    loadUser()
-  }, [])
+    loadUser();
+  }, []);
 
   // todo app
   // const [storeState, dispatch] = useStore();
@@ -85,6 +78,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/roomStyle" element={<RoomStyle />} />
           <Route path="/roomDetail" element={<RoomDetail />} />
+          <Route path="/blog" element={<Blog />} />
         </Route>
 
         <Route path="/login" element={<Login />} />
