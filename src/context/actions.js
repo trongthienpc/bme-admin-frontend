@@ -7,7 +7,9 @@ import {
   REGISTER,
   DELETE_ROOM_STYLE,
   FIND_ROOM,
-  UPDATE_ROOM
+  UPDATE_ROOM,
+  UPDATE_BLOG,
+  DELETE_BLOG,
 } from "./constant";
 
 export const login = (payload) => ({
@@ -27,8 +29,8 @@ export const loadUser = (payload) => ({
 
 export const logOut = (payload) => ({
   type: LOGOUT,
-  payload
-})
+  payload,
+});
 
 export const loadRoomStyle = (payload) => ({
   type: LOAD_ROOM_STYLE,
@@ -42,15 +44,25 @@ export const addRoomStyle = (payload) => ({
 
 export const delRoomStyle = (payload) => ({
   type: DELETE_ROOM_STYLE,
-  payload
-})
+  payload,
+});
 
 export const findRoom = (payload) => ({
   type: FIND_ROOM,
-  payload
-})
+  payload,
+});
 
 export const updateRoom = (payload) => ({
   type: UPDATE_ROOM,
-  payload
-})
+  payload,
+});
+
+export const updateBlog = (payload) => ({
+  type: UPDATE_BLOG,
+  payload,
+});
+
+export const delBlog = (payload) => ({
+  type: DELETE_BLOG,
+  payload,
+});

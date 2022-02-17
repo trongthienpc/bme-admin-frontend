@@ -27,3 +27,8 @@ export const ADD_SUCC = "Add successfully!";
 export const UPDATE_SUCC = "Update successfully";
 export const DEL_SUCC = "Delete successfully";
 export const SER_ERROR = "Server has an error";
+
+export const UPDATE_BLOG = "UPDATE_BLOG";
+export const LOAD_BLOG = "LOAD_BLOG";
+export const DELETE_BLOG = "DELETE_BLOG";
+export const FIND_BLOG = "FIND_BLOG";

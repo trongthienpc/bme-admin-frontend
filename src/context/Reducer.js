@@ -11,6 +11,8 @@ import {
   DELETE_ROOM_STYLE,
   FIND_ROOM,
   UPDATE_ROOM,
+  UPDATE_BLOG,
+  DELETE_BLOG,
 } from "./constant";
 const initState = {
   user: null,
@@ -18,8 +20,10 @@ const initState = {
   loginStatus: false,
   loginMessage: "",
   addMessage: "",
+  rooms: [],
   roomStyles: [],
   roomStyle: {},
+  blogs: [],
 };
 
 const roomStyleState = {
@@ -29,10 +33,16 @@ const roomStyleState = {
 
 function Reducer(state, action) {
   switch (action.type) {
+    case UPDATE_BLOG:
+      return {
+        ...state,
+        blogs: [...state.blogs],
+      };
     case UPDATE_ROOM:
       return {
         ...state,
         roomStyles: [...state.roomStyles],
+        rooms: [...state.rooms],
       };
     case FIND_ROOM:
       return {
@@ -45,18 +55,27 @@ function Reducer(state, action) {
         roomStyles: state.roomStyles.filter(
           (room) => room._id !== action.payload
         ),
+        rooms: state.rooms.filter((room) => room.id !== action.payload),
+      };
+
+    case DELETE_BLOG:
+      return {
+        ...state,
+        blogs: state.blogs.filter((blog) => blog._id !== action.payload),
       };
 
     case LOAD_ROOM_STYLE:
       return {
         ...state,
         roomStyles: action.payload,
+        rooms: action.payload,
       };
 
     case ADD_ROOM_STYLE:
       return {
         ...state,
         addMessage: action.payload.message,
+        rooms: [...state.rooms, action.payload],
       };
 
     case LOAD_USER:

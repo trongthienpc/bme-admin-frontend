@@ -1,66 +1,131 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Form, Image, Modal, Row, Col, Card } from "react-bootstrap";
-import FileBase64 from "react-file-base64";
-import { Editor } from "@tinymce/tinymce-react";
-import { addEntity, getAll, getById } from "../../../../services/blogServices";
-import { toast, ToastContainer } from "react-toastify";
-import { ADD_SUCC, SER_ERROR } from "../../../../context/constant";
 
+import {
+  addEntity,
+  deleteById,
+  getAll,
+  getById,
+  updateEntity,
+} from "../../../../services/blogServices";
+import { toast, ToastContainer } from "react-toastify";
+import {
+  ADD_SUCC,
+  DEL_SUCC,
+  SER_ERROR,
+  UPDATE_SUCC,
+} from "../../../../context/constant";
+import UploadImage from "../../uploadImage";
+import { default as cloudAPI } from "../../../../services/cloudUpload";
+import { actions, useStore } from "../../../../context";
+import TinyMCE from "../../../tools/tinyMCE";
 const Blog = () => {
+  const [state, dispatch] = useStore();
   // init value
-  const editorRef = useRef(null);
+  const [editorContent, setEditorContent] = useState("");
+  const [toEditor, setToEditor] = useState("default");
   const [blogs, setBlogs] = useState([]);
   const [imageState, setImageState] = useState();
   const [entityState, setEntityState] = useState({
     name: "",
+    quotes: "",
     avatar: "",
     content: "",
   });
 
-  useEffect(() => {
-    getAllBlogs();
-  }, [blogs]);
+  const [action, setAction] = useState(false);
 
-  // get all blogs
-  const getAllBlogs = async () => {
-    try {
-      const response = await getAll();
-      setBlogs(response.data);
-    } catch (error) {
-      toast.error(SER_ERROR);
-      console.log("error");
-    }
-  };
+  useEffect(() => {
+    const getAllBlogs = async () => {
+      try {
+        const response = await getAll();
+        toast.success(`Got  ${response.data.length} blogs`);
+        setBlogs(response.data);
+      } catch (error) {
+        toast.error(SER_ERROR);
+        console.log("error");
+      }
+    };
+    getAllBlogs();
+  }, [action]);
 
   // handle edit blog
+
+  const handleImage = (e) => {
+    const file = e.target.files[0];
+    file.preview = URL.createObjectURL(file);
+    setImageState(file);
+    console.log(imageState);
+  };
+
   const [modalEditShow, setModalEditShow] = useState(false);
-  const [oldEntity, setOldEntity] = useState({});
+  const [oldEntity, setOldEntity] = useState({
+    name: "",
+    quotes: "",
+    avatar: "",
+    content: "",
+  });
   const [oldId, setOldId] = useState("");
   const handleOldEntityChange = (e) => {
-    return {
+    setOldEntity({
       ...oldEntity,
       [e.target.name]: e.target.value,
-    };
+    });
   };
 
   const handleEdit = async (id) => {
     setOldId(id);
     try {
-      const res = await getById(id);
-      console.log("res:", res);
-      if (res) {
-        setOldEntity(res.data.response);
-        setImageState(res.data.response.avatar);
-        setModalEditShow(true);
-      }
+      const res = await getById(id)
+        .then((response) => {
+          return response;
+        })
+        .then((data) => {
+          setOldEntity(data.data.response);
+          setImageState(data.data.response.avatar);
+          setEditorContent(data.data.response.content);
+          setModalEditShow(true);
+        });
     } catch (error) {
       console.log(error);
     }
+    console.log(editorContent);
+  };
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+
+    if (oldEntity.avatar !== imageState) {
+      let secure_url = await cloudAPI(imageState);
+      if (secure_url) {
+        oldEntity.avatar = secure_url;
+        setImageState(secure_url);
+      }
+    } else oldEntity.avatar = imageState;
+
+    const formData = new FormData();
+    formData.append("name", oldEntity.name);
+    formData.append("avatar", oldEntity.avatar);
+    formData.append("quotes", oldEntity.quotes);
+    formData.append("content", editorContent);
+
+    try {
+      const res = await updateEntity(oldId, formData);
+      if (res.data.success) {
+        dispatch(actions.updateBlog(res.data));
+      }
+    } catch (err) {
+      console.log(err);
+    }
+    setModalEditShow(false);
+    setAction(!action);
+    toast.success(UPDATE_SUCC);
+    setImageState("");
   };
 
-  const handleDelete = () => {};
-
-  const handleEditSubmit = () => {};
+  // handle add
+  const handleAdd = () => {
+    setModalAddShow(true);
+  };
   // handle entity change
   const handleEntityChange = (e) => {
     setEntityState({
@@ -69,34 +134,28 @@ const Blog = () => {
     });
   };
   const [modalAddShow, setModalAddShow] = useState(false);
-
-  // handle add
-  const handleAdd = () => {
-    setModalAddShow(true);
-  };
-
   // submit entity to server
   const handleAddSubmit = async (e) => {
     e.preventDefault();
-    if (editorRef.current)
-      setEntityState({
-        ...entityState,
-        content: editorRef.current.getContent(),
-      });
+    if (!imageState) return toast.warn("Please input blog avatar");
+    // if (editorRef.current)
+    //   setEntityState({
+    //     ...entityState,
+    //     content: editorRef.current.getContent(),
+    //   });
 
-    if (imageState)
-      setEntityState({
-        ...entityState,
-        avatar: imageState,
-      });
+    let secure_url = await cloudAPI(imageState);
+    if (secure_url) entityState.avatar = secure_url;
     const formData = new FormData();
+    console.log(editorContent);
+    entityState.content = editorContent;
+    formData.append("content", entityState.content);
     formData.append("name", entityState.name);
     formData.append("quotes", entityState.quotes);
     formData.append("avatar", entityState.avatar);
-    entityState.content = editorRef.current.getContent();
-    formData.append("content", entityState.content);
     try {
       const response = await addEntity(formData);
+
       if (response.data.success) {
         toast.success(ADD_SUCC);
         setModalAddShow(false);
@@ -105,6 +164,31 @@ const Blog = () => {
       toast.error("Have error, please do it later");
       console.log(error);
     }
+    setAction(!action);
+    setImageState("");
+  };
+
+  // delete blog
+  const [delModal, setDelModal] = useState(false);
+  const [delBlogId, setDelBlogId] = useState("");
+  const handleDelete = (id) => {
+    setDelBlogId(id);
+    setDelModal(true);
+  };
+  const delBlogSubmit = async (id) => {
+    if (id) {
+      try {
+        const res = await deleteById(id);
+        if (res.data.success) {
+          dispatch(actions.delBlog(id));
+          setDelModal(false);
+          toast.success(DEL_SUCC);
+        }
+      } catch (error) {
+        toast.error(error.message);
+      }
+    }
+    setAction(!action);
     setImageState("");
   };
 
@@ -145,6 +229,7 @@ const Blog = () => {
         size="lg"
         show={modalAddShow}
         onHide={() => setModalAddShow(false)}
+        enforceFocus={false}
       >
         <Modal.Header closeButton>
           <Modal.Title>
@@ -168,11 +253,11 @@ const Blog = () => {
                 onChange={handleEntityChange}
               />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicQuotes">
-              <Form.Label>Name</Form.Label>
+            <Form.Group className="mb-3" controlId="quotes">
+              <Form.Label>Quotes</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter name"
+                placeholder="Enter quotes"
                 name="quotes"
                 value={entityState.quotes}
                 onChange={handleEntityChange}
@@ -181,67 +266,17 @@ const Blog = () => {
 
             <Form.Group controlId="formAvatar" className="mb-3">
               <Form.Label>Avatar</Form.Label>
-              {/* <Form.Control type="file" name="image" onChange={handleImage} /> */}
-              <div>
-                <FileBase64
-                  type="file"
-                  multiple={false}
-                  onDone={({ base64 }) => setImageState(base64)}
-                />
-                <Image
-                  src={imageState}
-                  fluid
-                  rounded
-                  thumbnail
-                  className="mb-2"
-                  hidden={imageState ? false : true}
-                />
-              </div>
+              <UploadImage setImageState={setImageState} />
             </Form.Group>
 
-            <Form.Group controlId="formEditor" className="mb-3">
+            <Form.Group controlId="editor" className="mb-3">
               <Form.Label>Content</Form.Label>
               <div>
-                <Editor
-                  apiKey="vqpljjh1ie1cw1eyrhhvw95556fdpeq24q7jyxmb7jgpmfcn"
-                  onInit={(evt, editor) => (editorRef.current = editor)}
-                  initialValue="<p>This is the initial content of the editor.</p>"
-                  init={{
-                    height: 500,
-                    menubar: false,
-                    plugins: [
-                      "advlist autolink lists link image charmap print preview anchor",
-                      "searchreplace visualblocks code fullscreen",
-                      "insertdatetime media table paste code help wordcount",
-                    ],
-                    toolbar:
-                      "undo redo | formatselect | " +
-                      "bold italic backcolor | alignleft aligncenter " +
-                      "alignright alignjustify | bullist numlist outdent indent | " +
-                      "image| removeformat | help",
-                    file_picker_callback: function (cb, value, meta) {
-                      var input = document.createElement("input");
-                      input.setAttribute("type", "file");
-                      input.setAttribute("accept", "image/*");
-                      input.onchange = function () {
-                        var file = this.files[0];
-                        var reader = new FileReader();
-                        reader.onload = function () {
-                          var id = "blobid" + new Date().getTime();
-                          var blobCache =
-                            editorRef.current.editorUpload.blobCache;
-                          var base64 = reader.result.split(",")[1];
-                          var blobInfo = blobCache.create(id, file, base64);
-                          blobCache.add(blobInfo);
-                          cb(blobInfo.blobUri(), { title: file.name });
-                        };
-                        reader.readAsDataURL(file);
-                      };
-                      input.click();
-                    },
-                    content_style:
-                      "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
-                  }}
+                {/* tinyMCE */}
+                <TinyMCE
+                  setEditorContent={setEditorContent}
+
+                  // setEditorContent={setEditorContent}
                 />
               </div>
             </Form.Group>
@@ -258,11 +293,12 @@ const Blog = () => {
         </Modal.Body>
       </Modal>
 
-      {/* modal edit room */}
+      {/* modal edit blog */}
       <Modal
         size="lg"
         show={modalEditShow}
         onHide={() => setModalEditShow(false)}
+        enforceFocus={false}
       >
         <Modal.Header closeButton>
           <Modal.Title>
@@ -276,7 +312,7 @@ const Blog = () => {
             method="post"
             // encType="multipart/form-data"
           >
-            <Form.Group className="mb-3" controlId="formBasicName">
+            <Form.Group className="mb-3" controlId="name">
               <Form.Label>Name</Form.Label>
               <Form.Control
                 type="text"
@@ -286,70 +322,39 @@ const Blog = () => {
                 onChange={handleOldEntityChange}
               />
             </Form.Group>
+            <Form.Group className="mb-3" controlId="quotes">
+              <Form.Label>Quotes</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter quotes"
+                name="quotes"
+                value={oldEntity.quotes}
+                onChange={handleOldEntityChange}
+              />
+            </Form.Group>
 
             <Form.Group controlId="formAvatar" className="mb-3">
               <Form.Label>Avatar</Form.Label>
-              {/* <Form.Control type="file" name="image" onChange={handleImage} /> */}
-              <div>
-                <FileBase64
-                  type="file"
-                  multiple={false}
-                  onDone={({ base64 }) => setImageState(base64)}
-                />
+              <Form.Control type="file" name="image" onChange={handleImage} />
+
+              {imageState && (
                 <Image
-                  src={imageState}
+                  src={imageState.preview ? imageState.preview : imageState}
                   fluid
                   rounded
                   thumbnail
                   className="mb-2"
                   hidden={imageState ? false : true}
                 />
-              </div>
+              )}
             </Form.Group>
 
             <Form.Group controlId="formEditor" className="mb-3">
               <Form.Label>Content</Form.Label>
               <div>
-                <Editor
-                  apiKey="vqpljjh1ie1cw1eyrhhvw95556fdpeq24q7jyxmb7jgpmfcn"
-                  onInit={(evt, editor) => (editorRef.current = editor)}
-                  initialValue={oldEntity.content}
-                  init={{
-                    height: 500,
-                    menubar: false,
-                    plugins: [
-                      "advlist autolink lists link image charmap print preview anchor",
-                      "searchreplace visualblocks code fullscreen",
-                      "insertdatetime media table paste code help wordcount",
-                    ],
-                    toolbar:
-                      "undo redo | formatselect | " +
-                      "bold italic backcolor | alignleft aligncenter " +
-                      "alignright alignjustify | bullist numlist outdent indent | " +
-                      "image| removeformat | help",
-                    file_picker_callback: function (cb, value, meta) {
-                      var input = document.createElement("input");
-                      input.setAttribute("type", "file");
-                      input.setAttribute("accept", "image/*");
-                      input.onchange = function () {
-                        var file = this.files[0];
-                        var reader = new FileReader();
-                        reader.onload = function () {
-                          var id = "blobid" + new Date().getTime();
-                          var blobCache =
-                            editorRef.current.editorUpload.blobCache;
-                          var base64 = reader.result.split(",")[1];
-                          var blobInfo = blobCache.create(id, file, base64);
-                          blobCache.add(blobInfo);
-                          cb(blobInfo.blobUri(), { title: file.name });
-                        };
-                        reader.readAsDataURL(file);
-                      };
-                      input.click();
-                    },
-                    content_style:
-                      "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
-                  }}
+                <TinyMCE
+                  setEditorContent={setEditorContent}
+                  editorContent={editorContent}
                 />
               </div>
             </Form.Group>
@@ -364,6 +369,32 @@ const Blog = () => {
             </Button>
           </Form>
         </Modal.Body>
+      </Modal>
+
+      {/* modal delete blog  */}
+      <Modal size="md" show={delModal} onHide={() => setDelModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <label>{delBlogId}</label>
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <label>Are you sure delete this style room?</label>
+        </Modal.Body>
+        <Modal.Footer className="d-flex justify-content-between">
+          <Button
+            className="btn btn-primary m-2"
+            onClick={() => setDelModal(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            className="btn btn-warning m-2"
+            onClick={() => delBlogSubmit(delBlogId)}
+          >
+            Delete
+          </Button>
+        </Modal.Footer>
       </Modal>
       <ToastContainer />
     </div>
