@@ -15,10 +15,10 @@ import {
   SER_ERROR,
   UPDATE_SUCC,
 } from "../../../../context/constant";
-import UploadImage from "../../uploadImage";
+import UploadImage from "../../../../services/uploadImage";
 import { default as cloudAPI } from "../../../../services/cloudUpload";
 import { actions, useStore } from "../../../../context";
-import TinyMCE from "../../../tools/tinyMCE";
+import TinyMCE from "../../../../services/tinyMCE";
 const Blog = () => {
   const [state, dispatch] = useStore();
   // init value
@@ -34,6 +34,15 @@ const Blog = () => {
   });
 
   const [action, setAction] = useState(false);
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.target.closest(".tox-tinymce-aux, .moxman-window, .tam-assetmanager-root") !== null) {
+        e.stopImmediatePropagation();
+      }
+    };
+    document.addEventListener("focusin", handler);
+    return () => document.removeEventListener("focusin", handler);
+  }, []);
 
   useEffect(() => {
     const getAllBlogs = async () => {
@@ -241,7 +250,7 @@ const Blog = () => {
           <Form
             onSubmit={handleAddSubmit}
             method="post"
-            // encType="multipart/form-data"
+          // encType="multipart/form-data"
           >
             <Form.Group className="mb-3" controlId="formBasicName">
               <Form.Label>Name</Form.Label>
@@ -276,7 +285,7 @@ const Blog = () => {
                 <TinyMCE
                   setEditorContent={setEditorContent}
 
-                  // setEditorContent={setEditorContent}
+                // setEditorContent={setEditorContent}
                 />
               </div>
             </Form.Group>
@@ -310,7 +319,7 @@ const Blog = () => {
           <Form
             onSubmit={handleEditSubmit}
             method="post"
-            // encType="multipart/form-data"
+          // encType="multipart/form-data"
           >
             <Form.Group className="mb-3" controlId="name">
               <Form.Label>Name</Form.Label>

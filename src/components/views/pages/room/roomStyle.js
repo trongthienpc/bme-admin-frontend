@@ -20,7 +20,7 @@ import {
   updateRoomById,
 } from "../../../../services/roomServices";
 
-import UploadImage from "../../uploadImage";
+import UploadImage from "../../../../services/uploadImage";
 import { default as cloudAPI } from "../../../../services/cloudUpload";
 
 const RoomStyle = () => {
@@ -79,7 +79,7 @@ const RoomStyle = () => {
         setOldRoom(res.data.room);
         setImageState(res.data.room.image);
       }
-    } catch (error) {}
+    } catch (error) { }
 
     setUpdateShow(true);
   };
@@ -113,6 +113,8 @@ const RoomStyle = () => {
     formData.append("name", oldRoom.name);
     formData.append("max", oldRoom.max);
     formData.append("bed", oldRoom.bed);
+    formData.append("size", oldRoom.size);
+    formData.append("view", oldRoom.view);
     formData.append("description", oldRoom.description);
     formData.append("image", oldRoom.image);
 
@@ -147,6 +149,8 @@ const RoomStyle = () => {
       formData.append("description", roomState.description);
       formData.append("max", roomState.max);
       formData.append("bed", roomState.bed);
+      formData.append("size", oldRoom.size);
+      formData.append("view", oldRoom.view);
       formData.append("image", roomState.image);
       const entity = await addEntity(formData);
       if (entity.data.success) toast.success(ADD_SUCC);
@@ -241,7 +245,7 @@ const RoomStyle = () => {
           <Form
             onSubmit={handleUpdate}
             method="post"
-            // encType="multipart/form-data"
+          // encType="multipart/form-data"
           >
             <Form.Group className="mb-3" controlId="formBasicName">
               <Form.Label>Name</Form.Label>
@@ -275,11 +279,29 @@ const RoomStyle = () => {
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formBasicBed">
-              <Form.Label>Number formBasicBed</Form.Label>
+              <Form.Label>Number Bed</Form.Label>
               <Form.Control
                 type="text"
                 name="bed"
                 value={oldRoom.bed}
+                onChange={handleUpdateChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="size">
+              <Form.Label>Room size</Form.Label>
+              <Form.Control
+                type="text"
+                name="size"
+                value={oldRoom.size}
+                onChange={handleUpdateChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="view">
+              <Form.Label>Room view</Form.Label>
+              <Form.Control
+                type="text"
+                name="view"
+                value={oldRoom.view}
                 onChange={handleUpdateChange}
               />
             </Form.Group>
@@ -305,9 +327,9 @@ const RoomStyle = () => {
               type="submit"
               disabled={
                 oldRoom.bed &&
-                oldRoom.max &&
-                oldRoom.name &&
-                oldRoom.description
+                  oldRoom.max &&
+                  oldRoom.name &&
+                  oldRoom.description
                   ? false
                   : true
               }
@@ -330,7 +352,7 @@ const RoomStyle = () => {
           <Form
             onSubmit={handleSubmit}
             method="post"
-            // encType="multipart/form-data"
+          // encType="multipart/form-data"
           >
             <Form.Group className="mb-3" controlId="formBasicName">
               <Form.Label>Name</Form.Label>
@@ -389,11 +411,11 @@ const RoomStyle = () => {
               type="submit"
               disabled={
                 imageState &&
-                roomState.name &&
-                roomState.max &&
-                roomState.bed &&
-                roomState.description &&
-                !loading
+                  roomState.name &&
+                  roomState.max &&
+                  roomState.bed &&
+                  roomState.description &&
+                  !loading
                   ? false
                   : true
               }

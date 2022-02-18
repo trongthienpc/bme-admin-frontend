@@ -13,7 +13,7 @@ const TinyMCE = ({ setEditorContent, editorContent }) => {
   return (
     <Editor
       apiKey="vqpljjh1ie1cw1eyrhhvw95556fdpeq24q7jyxmb7jgpmfcn"
-      // onInit={(evt, editor) => (editorRef.current = editor)}
+      onInit={(evt, editor) => (editorRef.current = editor)}
       // initialValue="<p>This is the initial content of the editor.</p>"
       value={data}
       onEditorChange={handleEditorChange}
