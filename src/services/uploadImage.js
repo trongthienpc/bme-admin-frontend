@@ -2,8 +2,9 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { Form, Image } from "react-bootstrap";
 
-const UploadImage = ({ setImageState }) => {
-  const [image, setImage] = useState();
+const UploadImage = ({ setImageState, imageState }) => {
+  console.log(imageState);
+  const [image, setImage] = useState(imageState);
 
   useEffect(() => {
     return () => {
@@ -24,7 +25,7 @@ const UploadImage = ({ setImageState }) => {
       <Form.Control type="file" accept="image/*" onChange={onImageChange} />
       {image && (
         <Image
-          src={image.preview}
+          src={image.preview ? image.preview : image}
           fluid
           rounded
           thumbnail

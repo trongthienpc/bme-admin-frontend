@@ -1,37 +1,31 @@
 import React, { useState, useEffect } from "react";
-import { Form, Button, Col, Image } from "react-bootstrap";
+import { Button, Col } from "react-bootstrap";
 import { actions, useStore } from "../../../../context";
-import { addRoomStyle, delRoomStyle } from "../../../../context/actions";
-import {
-  ADD_SUCC,
-  DEL_SUCC,
-  UPDATE_SUCC,
-  SER_ERROR,
-  apiUrl,
-} from "../../../../context/constant";
+import { delRoomStyle } from "../../../../context/actions";
+import { DEL_SUCC, SER_ERROR } from "../../../../context/constant";
 import { toast, ToastContainer } from "react-toastify";
 import { Modal, Row, Card } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
-  addEntity,
   deleteRoomById,
   getAllRoom,
   getRoomById,
-  updateRoomById,
 } from "../../../../services/roomServices";
 
-import UploadImage from "../../../../services/uploadImage";
-import { default as cloudAPI } from "../../../../services/cloudUpload";
+import AddRoomModal from "./_addRoomModal";
+import UpdateRoomModal from "./_updateRoomModal";
 
 const RoomStyle = () => {
   const [state, dispatch] = useStore();
   const [action, setAction] = useState(false);
+  const [editStatus, setEditStatus] = useState(false);
+  const [addStatus, setAddStatus] = useState(false);
   const { rooms } = state;
-  const [loading, setLoading] = useState(false);
 
-  const [imageState, setImageState] = useState();
+  const [imageState, setImageState] = useState([]);
 
   //  get rooms when element re-render
+  // console.log(rooms);
   useEffect(() => {
     const getRooms = async () => {
       try {
@@ -51,127 +45,28 @@ const RoomStyle = () => {
 
   const [deleteRoomId, setDeleteRoomId] = useState("");
 
-  const [roomState, setRoomState] = useState({
-    name: "",
-    description: "This is description for room style",
-    image: "",
-    max: "persons",
-    bed: "bed",
-  });
-
   // update room
-  const [updateShow, setUpdateShow] = useState(false);
-  const [oldRoomId, setOldRoomId] = useState("");
+  const [updateShow, setUpdateShow] = useState();
+
   const [oldRoom, setOldRoom] = useState({});
 
-  const handleImage = (e) => {
-    const file = e.target.files[0];
-    file.preview = URL.createObjectURL(file);
-    setImageState(file);
-  };
-
   const handlEdit = async (id) => {
-    setOldRoomId(id);
+    setEditStatus(true);
     try {
       const res = await getRoomById(id);
       if (res.data.success) {
         dispatch(actions.findRoom(res.data));
         setOldRoom(res.data.room);
-        setImageState(res.data.room.image);
+        setImageState(res.data.room.images);
       }
-    } catch (error) { }
-
+    } catch (error) {}
     setUpdateShow(true);
   };
-  const handleUpdateChange = (e) => {
-    setOldRoom({
-      ...oldRoom,
-      [e.target.name]: e.target.value,
-    });
-  };
-  const handleUpdate = async (e) => {
-    e.preventDefault();
 
-    console.log("old image: ", oldRoom.image);
-    console.log("imageState: ", imageState);
-
-    if (oldRoom.image !== imageState) {
-      try {
-        let secure_url = await cloudAPI(imageState);
-        if (secure_url) {
-          oldRoom.image = secure_url;
-          setImageState(secure_url);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    } else {
-      oldRoom.image = imageState;
-    }
-
-    const formData = new FormData();
-    formData.append("name", oldRoom.name);
-    formData.append("max", oldRoom.max);
-    formData.append("bed", oldRoom.bed);
-    formData.append("size", oldRoom.size);
-    formData.append("view", oldRoom.view);
-    formData.append("description", oldRoom.description);
-    formData.append("image", oldRoom.image);
-
-    const response = await updateRoomById(oldRoomId, formData);
-
-    if (response.data.success) {
-      dispatch(actions.updateRoom(response.data));
-
-      setUpdateShow(false);
-      toast.success(UPDATE_SUCC);
-      setImageState("");
-      setAction(!action);
-      // getRooms();
-    }
-  };
-
-  // add new room style
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    if (!imageState) toast.warn("Please input image!");
-    else {
-      try {
-        let secure_url = await cloudAPI(imageState);
-        if (secure_url) roomState.image = secure_url;
-      } catch (error) {
-        console.log(error);
-      }
-
-      const formData = new FormData();
-      formData.append("name", roomState.name);
-      formData.append("description", roomState.description);
-      formData.append("max", roomState.max);
-      formData.append("bed", roomState.bed);
-      formData.append("size", oldRoom.size);
-      formData.append("view", oldRoom.view);
-      formData.append("image", roomState.image);
-      const entity = await addEntity(formData);
-      if (entity.data.success) toast.success(ADD_SUCC);
-      dispatch(addRoomStyle(entity.data));
-      setlgShow(false);
-      setAction(!action);
-    }
-    setImageState("");
-    setLoading(false);
-  };
-
-  const handleChange = (e) => {
-    setRoomState({
-      ...roomState,
-      [e.target.name]: e.target.value,
-    });
-  };
-
+  // add new room
   const handleAdd = () => {
-    // setImageState("");
     setlgShow(true);
+    setAddStatus(true);
   };
 
   // delete room
@@ -233,198 +128,29 @@ const RoomStyle = () => {
       </Row>
 
       {/* modal update room */}
-      <Modal size="lg" show={updateShow} onHide={() => setUpdateShow(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            {/* Update Room */}
-            {oldRoom.name}
-            {/* <pre>{JSON.stringify(roomState, null, '\t')}</pre> */}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form
-            onSubmit={handleUpdate}
-            method="post"
-          // encType="multipart/form-data"
-          >
-            <Form.Group className="mb-3" controlId="formBasicName">
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter name"
-                name="name"
-                value={oldRoom.name}
-                onChange={handleUpdateChange}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formBasicPassword">
-              <Form.Label>Description</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                name="description"
-                value={oldRoom.description}
-                onChange={handleUpdateChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicMax">
-              <Form.Label>Max person</Form.Label>
-              <Form.Control
-                type="text"
-                name="max"
-                value={oldRoom.max}
-                onChange={handleUpdateChange}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formBasicBed">
-              <Form.Label>Number Bed</Form.Label>
-              <Form.Control
-                type="text"
-                name="bed"
-                value={oldRoom.bed}
-                onChange={handleUpdateChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="size">
-              <Form.Label>Room size</Form.Label>
-              <Form.Control
-                type="text"
-                name="size"
-                value={oldRoom.size}
-                onChange={handleUpdateChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="view">
-              <Form.Label>Room view</Form.Label>
-              <Form.Control
-                type="text"
-                name="view"
-                value={oldRoom.view}
-                onChange={handleUpdateChange}
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formFile" className="mb-3">
-              <Form.Label>Image</Form.Label>
-              <Form.Control type="file" name="image" onChange={handleImage} />
-            </Form.Group>
-
-            {imageState && (
-              <Image
-                src={imageState.preview ? imageState.preview : imageState}
-                fluid
-                rounded
-                thumbnail
-                className="mb-2"
-                hidden={imageState ? false : true}
-              />
-            )}
-
-            <Button
-              variant="primary"
-              type="submit"
-              disabled={
-                oldRoom.bed &&
-                  oldRoom.max &&
-                  oldRoom.name &&
-                  oldRoom.description
-                  ? false
-                  : true
-              }
-            >
-              Submit
-            </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
-
+      {editStatus && (
+        <UpdateRoomModal
+          show={updateShow}
+          setUpdateShow={setUpdateShow}
+          action={action}
+          setAction={setAction}
+          oldRoom={oldRoom}
+          setOldRoom={setOldRoom}
+          imageState={imageState}
+          setImageState={setImageState}
+          setEditStatus={setEditStatus}
+        />
+      )}
       {/* modal add new room */}
-      <Modal size="lg" show={lgShow} onHide={() => setlgShow(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            Add new room style
-            {/* <pre>{JSON.stringify(roomState, null, '\t')}</pre> */}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form
-            onSubmit={handleSubmit}
-            method="post"
-          // encType="multipart/form-data"
-          >
-            <Form.Group className="mb-3" controlId="formBasicName">
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter name"
-                name="name"
-                value={roomState.name}
-                onChange={handleChange}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formBasicPassword">
-              <Form.Label>Description</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                name="description"
-                value={roomState.description}
-                onChange={handleChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicMax">
-              <Form.Label>Max person</Form.Label>
-              <Form.Control
-                type="text"
-                name="max"
-                value={roomState.max}
-                onChange={handleChange}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formBasicBed">
-              <Form.Label>Number formBasicBed</Form.Label>
-              <Form.Control
-                type="text"
-                name="bed"
-                value={roomState.bed}
-                onChange={handleChange}
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formFile" className="mb-3">
-              <Form.Label>Image</Form.Label>
-              {/* <Form.Control type="file" name="image" onChange={handleImage} /> */}
-              {/* <FileBase64
-                type="file"
-                multiple={false}
-                onDone={({ base64 }) => setImageState(base64)}
-              /> */}
-              <UploadImage setImageState={setImageState} />
-            </Form.Group>
-
-            <Button
-              variant="primary"
-              type="submit"
-              disabled={
-                imageState &&
-                  roomState.name &&
-                  roomState.max &&
-                  roomState.bed &&
-                  roomState.description &&
-                  !loading
-                  ? false
-                  : true
-              }
-            >
-              Submit
-            </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
+      {addStatus && (
+        <AddRoomModal
+          show={lgShow}
+          setlgShow={setlgShow}
+          action={action}
+          setAction={setAction}
+          setAddStatus={setAddStatus}
+        />
+      )}
 
       {/* modal delete room  */}
       <Modal size="md" show={mdShow} onHide={() => setMdShow(false)}>

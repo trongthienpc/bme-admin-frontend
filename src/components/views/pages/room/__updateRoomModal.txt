@@ -1,0 +1,106 @@
+ <Modal size="lg" show={updateShow} onHide={() => setUpdateShow(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            {/* Update Room */}
+            {oldRoom.name}
+            {/* <pre>{JSON.stringify(roomState, null, '\t')}</pre> */}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form
+            onSubmit={handleUpdate}
+            method="post"
+            // encType="multipart/form-data"
+          >
+            <Form.Group className="mb-3" controlId="formBasicName">
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter name"
+                name="name"
+                value={oldRoom.name}
+                onChange={handleUpdateChange}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="formBasicPassword">
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                name="description"
+                value={oldRoom.description}
+                onChange={handleUpdateChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicMax">
+              <Form.Label>Max person</Form.Label>
+              <Form.Control
+                type="text"
+                name="max"
+                value={oldRoom.max}
+                onChange={handleUpdateChange}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="formBasicBed">
+              <Form.Label>Number Bed</Form.Label>
+              <Form.Control
+                type="text"
+                name="bed"
+                value={oldRoom.bed}
+                onChange={handleUpdateChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="size">
+              <Form.Label>Room size</Form.Label>
+              <Form.Control
+                type="text"
+                name="size"
+                value={oldRoom.size}
+                onChange={handleUpdateChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="view">
+              <Form.Label>Room view</Form.Label>
+              <Form.Control
+                type="text"
+                name="view"
+                value={oldRoom.view}
+                onChange={handleUpdateChange}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formFile" className="mb-3">
+              <Form.Label>Image</Form.Label>
+              <Form.Control type="file" name="image" onChange={handleImage} />
+            </Form.Group>
+
+            {imageState && (
+              <Image
+                src={imageState.preview ? imageState.preview : imageState}
+                fluid
+                rounded
+                thumbnail
+                className="mb-2"
+                hidden={imageState ? false : true}
+              />
+            )}
+
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={
+                oldRoom.bed &&
+                oldRoom.max &&
+                oldRoom.name &&
+                oldRoom.description
+                  ? false
+                  : true
+              }
+            >
+              Submit
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
