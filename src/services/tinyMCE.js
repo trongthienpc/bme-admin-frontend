@@ -1,8 +1,12 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Editor } from "@tinymce/tinymce-react";
+// require("dotenv").config();
 
 const TinyMCE = ({ setEditorContent, editorContent }) => {
-  const [data, setData] = useState(editorContent);
+  let initialContent =
+    "<p>... let write something here about your blog ...</p>";
+  if (editorContent) initialContent = editorContent;
+  const [data, setData] = useState(initialContent);
 
   const handleEditorChange = (content) => {
     setEditorContent(content);
@@ -12,7 +16,7 @@ const TinyMCE = ({ setEditorContent, editorContent }) => {
 
   return (
     <Editor
-      apiKey="vqpljjh1ie1cw1eyrhhvw95556fdpeq24q7jyxmb7jgpmfcn"
+      apiKey={process.env.REACT_APP_API_tinyMCEKey}
       onInit={(evt, editor) => (editorRef.current = editor)}
       // initialValue="<p>This is the initial content of the editor.</p>"
       value={data}

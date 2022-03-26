@@ -9,7 +9,6 @@ import store from "./store";
 import { StoreProvider } from "./context";
 
 ReactDOM.render(
-
   <BrowserRouter>
     <Provider store={store}>
       {/* <AuthContextProvider> */}
@@ -20,8 +19,7 @@ ReactDOM.render(
       </StoreProvider>
       {/* </AuthContextProvider> */}
     </Provider>
-  </BrowserRouter>
-  ,
+  </BrowserRouter>,
   document.getElementById("root")
 );
 

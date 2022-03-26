@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
 import { actions, useStore } from "../../../../context";
 import { UPDATE_SUCC } from "../../../../context/constant";
@@ -13,25 +13,37 @@ const UpdateRoomModal = ({
   setUpdateShow,
   action,
   setAction,
-  oldRoom,
-  setOldRoom,
-  imageState,
-  setImageState,
+  // oldRoom,
+  // setOldRoom,
+  // imageState,
+  // setImageState,
   setEditStatus,
 }) => {
+  console.log("call update room modal");
   const [state, dispatch] = useStore();
   const [loading, setLoading] = useState(false);
   const [cloudUrls, setCloudUrls] = useState([]);
 
+  const [oldRoom, setOldRoom] = useState(() => {
+    const oldRoomJson = localStorage.getItem("room") || "";
+    const oldRoom = JSON.parse(oldRoomJson) || {};
+    return oldRoom;
+  });
+
+  const [imageState, setImageState] = useState(() => {
+    const images = oldRoom.images;
+    return images;
+  });
+
   const editAction = true;
 
-  console.log(oldRoom);
   function handleClose() {
     setUpdateShow(false);
     setEditStatus(false);
   }
 
   const handleUpdateChange = (e) => {
+    console.log("input changes ==============>");
     setOldRoom({
       ...oldRoom,
       [e.target.name]: e.target.value,
@@ -40,7 +52,6 @@ const UpdateRoomModal = ({
   const handleUpdate = async (e) => {
     e.preventDefault();
     setLoading(true);
-    console.log(loading);
 
     let id = oldRoom._id;
 
@@ -55,7 +66,6 @@ const UpdateRoomModal = ({
             return listUrl;
           });
         }
-        // console.log("cloudUrls stringify: ", JSON.stringify(cloudUrls));
       } catch (error) {
         console.log(error);
       }
@@ -72,7 +82,7 @@ const UpdateRoomModal = ({
     formData.append("description", oldRoom.description);
 
     const urls = JSON.parse(localStorage.getItem("urls"));
-    console.log(urls.length);
+
     if (urls.length > 0) {
       for (let i = 0; i < urls.length; i++) {
         formData.append("images[]", urls[i]);
@@ -84,36 +94,22 @@ const UpdateRoomModal = ({
 
     if (response.data.success) {
       dispatch(actions.updateRoom(response.data));
-
+      console.log(response.data.message);
       setUpdateShow(false);
       toast.success(UPDATE_SUCC);
       setImageState("");
       setAction(!action);
-      // getRooms();
     }
   };
   return (
     <>
       {/* modal update room */}
-      <Modal
-        size="lg"
-        show={show}
-        // onHide={() => setUpdateShow(false)}
-        onHide={handleClose}
-      >
+      <Modal size="lg" show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>
-            {/* Update Room */}
-            {oldRoom.name}
-            {/* <pre>{JSON.stringify(roomState, null, '\t')}</pre> */}
-          </Modal.Title>
+          <Modal.Title>{oldRoom.name}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form
-            onSubmit={handleUpdate}
-            method="post"
-            // encType="multipart/form-data"
-          >
+          <Form onSubmit={handleUpdate} method="post">
             <Form.Group className="mb-3" controlId="formBasicName">
               <Form.Label>Name</Form.Label>
               <Form.Control
@@ -180,23 +176,7 @@ const UpdateRoomModal = ({
                 imageState={imageState}
                 editAction={editAction}
               />
-              {/* <UploadImage
-                setImageState={setImageState}
-                imageState={imageState}
-              /> */}
-              {/* <Form.Control type="file" name="image" onChange={handleImage} /> */}
             </Form.Group>
-
-            {/* {imageState && (
-              <Image
-                src={imageState.preview ? imageState.preview : imageState}
-                fluid
-                rounded
-                thumbnail
-                className="mb-2"
-                hidden={imageState ? false : true}
-              />
-            )} */}
 
             <Button
               variant="primary"

@@ -1,0 +1,13 @@
+table th {
+  text-align: center;
+}
+
+.actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.actions button {
+  margin-right: 2px;
+}

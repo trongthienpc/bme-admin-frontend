@@ -32,3 +32,8 @@ export const UPDATE_BLOG = "UPDATE_BLOG";
 export const LOAD_BLOG = "LOAD_BLOG";
 export const DELETE_BLOG = "DELETE_BLOG";
 export const FIND_BLOG = "FIND_BLOG";
+
+export const ADD_COMMENT = "ADD_COMMENT";
+export const LOAD_COMMENT = "LOAD_COMMENT";
+export const UPDATE_COMMENT = "UPDATE_COMMENT";
+export const DEL_COMMENT = "DEL_COMMENT";

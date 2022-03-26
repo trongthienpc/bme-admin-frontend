@@ -3,9 +3,7 @@ import { useEffect, useState } from "react";
 import { Form, Image } from "react-bootstrap";
 
 const UploadImages = ({ setImageState, imageState, editAction }) => {
-  console.log(imageState);
   editAction = editAction ?? false;
-  console.log(editAction);
   const [images, setImages] = useState([]);
 
   useEffect(() => {
@@ -17,19 +15,15 @@ const UploadImages = ({ setImageState, imageState, editAction }) => {
   }, [images]);
 
   const onImageChange = (e) => {
+    console.log("image change ===>");
     let files = Array.from(e.target.files);
 
     for (let i = 0; i < files.length; i++) {
       files[i].preview = URL.createObjectURL(files[i]);
-      //   setImages((pre) => {
-      //     return [...pre];
-      //   });
     }
-    // console.log("files", files);
     setImages(() => {
       return files;
     });
-    // console.log(images.length);
     setImageState(() => {
       return files;
     });

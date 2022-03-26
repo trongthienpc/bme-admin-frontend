@@ -19,6 +19,7 @@ import UploadImage from "../../../../services/uploadImage";
 import { default as cloudAPI } from "../../../../services/cloudUpload";
 import { actions, useStore } from "../../../../context";
 import TinyMCE from "../../../../services/tinyMCE";
+import AddBlogModal from "./_addBlogModal";
 const Blog = () => {
   const [state, dispatch] = useStore();
   // init value
@@ -34,9 +35,15 @@ const Blog = () => {
   });
 
   const [action, setAction] = useState(false);
+
+  // bootstrap issue
   useEffect(() => {
     const handler = (e) => {
-      if (e.target.closest(".tox-tinymce-aux, .moxman-window, .tam-assetmanager-root") !== null) {
+      if (
+        e.target.closest(
+          ".tox-tinymce-aux, .moxman-window, .tam-assetmanager-root"
+        ) !== null
+      ) {
         e.stopImmediatePropagation();
       }
     };
@@ -44,6 +51,7 @@ const Blog = () => {
     return () => document.removeEventListener("focusin", handler);
   }, []);
 
+  // get blogs
   useEffect(() => {
     const getAllBlogs = async () => {
       try {
@@ -59,7 +67,6 @@ const Blog = () => {
   }, [action]);
 
   // handle edit blog
-
   const handleImage = (e) => {
     const file = e.target.files[0];
     file.preview = URL.createObjectURL(file);
@@ -85,16 +92,26 @@ const Blog = () => {
   const handleEdit = async (id) => {
     setOldId(id);
     try {
-      const res = await getById(id)
-        .then((response) => {
-          return response;
-        })
-        .then((data) => {
-          setOldEntity(data.data.response);
-          setImageState(data.data.response.avatar);
-          setEditorContent(data.data.response.content);
-          setModalEditShow(true);
+      // const res = await getById(id)
+      //   .then((response) => {
+      //     return response;
+      //   })
+      //   .then((data) => {
+      //     setOldEntity(data.data.response);
+      //     setImageState(data.data.response.avatar);
+      //     setEditorContent(data.data.response.content);
+      //     setModalEditShow(true);
+      //   });
+      // console.log(res);
+      const res = await getById(id);
+      if (res.data.success) {
+        setOldEntity(() => {
+          const blog = res.data.response;
+          const blogJson = JSON.stringify(blog);
+          localStorage.setItem("blog", blogJson);
+          return blog;
         });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -132,49 +149,11 @@ const Blog = () => {
   };
 
   // handle add
+  const [lgShow, setlgShow] = useState(false);
+  const [addStatus, setAddStatus] = useState(false);
   const handleAdd = () => {
-    setModalAddShow(true);
-  };
-  // handle entity change
-  const handleEntityChange = (e) => {
-    setEntityState({
-      ...entityState,
-      [e.target.name]: e.target.value,
-    });
-  };
-  const [modalAddShow, setModalAddShow] = useState(false);
-  // submit entity to server
-  const handleAddSubmit = async (e) => {
-    e.preventDefault();
-    if (!imageState) return toast.warn("Please input blog avatar");
-    // if (editorRef.current)
-    //   setEntityState({
-    //     ...entityState,
-    //     content: editorRef.current.getContent(),
-    //   });
-
-    let secure_url = await cloudAPI(imageState);
-    if (secure_url) entityState.avatar = secure_url;
-    const formData = new FormData();
-    console.log(editorContent);
-    entityState.content = editorContent;
-    formData.append("content", entityState.content);
-    formData.append("name", entityState.name);
-    formData.append("quotes", entityState.quotes);
-    formData.append("avatar", entityState.avatar);
-    try {
-      const response = await addEntity(formData);
-
-      if (response.data.success) {
-        toast.success(ADD_SUCC);
-        setModalAddShow(false);
-      }
-    } catch (error) {
-      toast.error("Have error, please do it later");
-      console.log(error);
-    }
-    setAction(!action);
-    setImageState("");
+    setlgShow(true);
+    setAddStatus(true);
   };
 
   // delete blog
@@ -206,7 +185,7 @@ const Blog = () => {
       <button className="btn btn-secondary mb-2" onClick={() => handleAdd()}>
         Add New
       </button>
-      <Row xs={1} sm={2} md={3} className="g-4">
+      <Row xs={1} md={2} className="g-4">
         {blogs.map((blog, index) => (
           <Col key={index}>
             <Card className="mb-2 h-100">
@@ -234,73 +213,13 @@ const Blog = () => {
       </Row>
 
       {/* modal add new blog */}
-      <Modal
-        size="lg"
-        show={modalAddShow}
-        onHide={() => setModalAddShow(false)}
-        enforceFocus={false}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>
-            Add new blog
-            {/* <pre>{JSON.stringify(roomState, null, '\t')}</pre> */}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form
-            onSubmit={handleAddSubmit}
-            method="post"
-          // encType="multipart/form-data"
-          >
-            <Form.Group className="mb-3" controlId="formBasicName">
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter name"
-                name="name"
-                value={entityState.name}
-                onChange={handleEntityChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="quotes">
-              <Form.Label>Quotes</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter quotes"
-                name="quotes"
-                value={entityState.quotes}
-                onChange={handleEntityChange}
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formAvatar" className="mb-3">
-              <Form.Label>Avatar</Form.Label>
-              <UploadImage setImageState={setImageState} />
-            </Form.Group>
-
-            <Form.Group controlId="editor" className="mb-3">
-              <Form.Label>Content</Form.Label>
-              <div>
-                {/* tinyMCE */}
-                <TinyMCE
-                  setEditorContent={setEditorContent}
-
-                // setEditorContent={setEditorContent}
-                />
-              </div>
-            </Form.Group>
-
-            <Button
-              variant="primary"
-              type="submit"
-              //   onClick={handleAddSubmit}
-              disabled={imageState ? false : true}
-            >
-              Submit
-            </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
+      <AddBlogModal
+        show={lgShow}
+        setlgShow={setlgShow}
+        action={action}
+        setAction={setAction}
+        setAddStatus={setAddStatus}
+      />
 
       {/* modal edit blog */}
       <Modal
@@ -319,7 +238,7 @@ const Blog = () => {
           <Form
             onSubmit={handleEditSubmit}
             method="post"
-          // encType="multipart/form-data"
+            // encType="multipart/form-data"
           >
             <Form.Group className="mb-3" controlId="name">
               <Form.Label>Name</Form.Label>

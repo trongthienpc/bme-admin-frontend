@@ -51,16 +51,21 @@ const RoomStyle = () => {
   const [oldRoom, setOldRoom] = useState({});
 
   const handlEdit = async (id) => {
-    setEditStatus(true);
     try {
       const res = await getRoomById(id);
       if (res.data.success) {
         dispatch(actions.findRoom(res.data));
-        setOldRoom(res.data.room);
-        setImageState(res.data.room.images);
+        setOldRoom(() => {
+          const room = res.data.room;
+          const roomJson = JSON.stringify(room);
+          localStorage.setItem("room", roomJson);
+          return room;
+        });
+        // setImageState(res.data.room.images);
       }
     } catch (error) {}
     setUpdateShow(true);
+    setEditStatus(true);
   };
 
   // add new room
@@ -134,7 +139,7 @@ const RoomStyle = () => {
           setUpdateShow={setUpdateShow}
           action={action}
           setAction={setAction}
-          oldRoom={oldRoom}
+          // oldRoom={oldRoom}
           setOldRoom={setOldRoom}
           imageState={imageState}
           setImageState={setImageState}

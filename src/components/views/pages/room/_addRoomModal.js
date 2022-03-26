@@ -12,7 +12,7 @@ const AddRoomModal = ({ show, setlgShow, action, setAction, setAddStatus }) => {
   // console.log(action);
   const [state, dispatch] = useStore();
   const [roomState, setRoomState] = useState({
-    name: "",
+    name: "room name",
     description: "This is description for room style",
     image: "",
     max: "3 persons",
@@ -71,8 +71,11 @@ const AddRoomModal = ({ show, setlgShow, action, setAction, setAddStatus }) => {
       }
       formData.append("image", urls[0]);
       const entity = await addEntity(formData);
-      if (entity.data.success) toast.success(ADD_SUCC);
-      dispatch(actions.addRoomStyle(entity.data));
+      if (entity.data.success) {
+        toast.success(ADD_SUCC);
+        dispatch(actions.addRoomStyle(entity.data));
+        console.log(entity.data.message);
+      }
       setlgShow(false);
       setAction(!action);
     }
@@ -199,4 +202,4 @@ const AddRoomModal = ({ show, setlgShow, action, setAction, setAddStatus }) => {
   );
 };
 
-export default AddRoomModal;
+export default React.memo(AddRoomModal);

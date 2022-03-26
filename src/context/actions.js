@@ -10,6 +10,9 @@ import {
   UPDATE_ROOM,
   UPDATE_BLOG,
   DELETE_BLOG,
+  LOAD_COMMENT,
+  UPDATE_COMMENT,
+  DEL_COMMENT,
 } from "./constant";
 
 export const login = (payload) => ({
@@ -64,5 +67,20 @@ export const updateBlog = (payload) => ({
 
 export const delBlog = (payload) => ({
   type: DELETE_BLOG,
+  payload,
+});
+
+export const loadComment = (payload) => ({
+  type: LOAD_COMMENT,
+  payload,
+});
+
+export const updateComment = (payload) => ({
+  type: UPDATE_COMMENT,
+  payload,
+});
+
+export const deleteComment = (payload) => ({
+  type: DEL_COMMENT,
   payload,
 });

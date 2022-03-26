@@ -13,6 +13,7 @@ import { LOCAL_STORAGE_TOKEN_NAME } from "./context/constant";
 
 import { loadUser } from "./context/Reducer";
 import Blog from "./components/views/pages/blog/blog";
+import Comment from "./components/views/pages/comment/comment";
 const DefaultLayout = React.lazy(() => import("./layout/default"));
 
 // check authorized
@@ -79,6 +80,7 @@ function App() {
           <Route path="/roomStyle" element={<RoomStyle />} />
           <Route path="/roomDetail" element={<RoomDetail />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/comment" element={<Comment />} />
         </Route>
 
         <Route path="/login" element={<Login />} />

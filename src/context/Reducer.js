@@ -13,6 +13,9 @@ import {
   UPDATE_ROOM,
   UPDATE_BLOG,
   DELETE_BLOG,
+  LOAD_COMMENT,
+  UPDATE_COMMENT,
+  DEL_COMMENT,
 } from "./constant";
 const initState = {
   user: null,
@@ -24,6 +27,7 @@ const initState = {
   roomStyles: [],
   roomStyle: {},
   blogs: [],
+  comments: [],
 };
 
 const roomStyleState = {
@@ -99,6 +103,24 @@ function Reducer(state, action) {
         user: null,
       };
 
+    case LOAD_COMMENT:
+      return {
+        ...state,
+        comments: action.payload,
+      };
+
+    case UPDATE_COMMENT:
+      return {
+        ...state,
+        comments: state.comments.map((comment) =>
+          comment._id === action.payload._id ? action.payload : comment
+        ),
+      };
+    case DEL_COMMENT:
+      return {
+        ...state,
+        comments: state.comments.filter((x) => x._id !== action.payload),
+      };
     default:
       break;
   }
