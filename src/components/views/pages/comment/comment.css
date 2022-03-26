@@ -100,3 +100,11 @@ table th {
     background-color: #cecece;
   }
 }
+
+.btn-edit {
+  background-color: #95a5b5;
+}
+
+.btn-del {
+  background-color: #b5a176;
+}

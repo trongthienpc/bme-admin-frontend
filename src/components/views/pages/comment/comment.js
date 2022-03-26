@@ -98,6 +98,18 @@ const Comment = () => {
     setAddStatus(true);
   };
 
+  // convert text to TitleCase
+  const convertTextToTitleCase = (text) => {
+    let camelCaseText = text
+      .split(" ")
+      .map(function (word, index) {
+        // First character upper case else lower case
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      })
+      .join(" ");
+    return camelCaseText;
+  };
+
   return (
     <div className="comments">
       {/* add new comment */}
@@ -149,6 +161,7 @@ const Comment = () => {
                   <th>Name</th>
                   <th>Nation</th>
                   <th>Comment</th>
+                  <th>Date</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -159,19 +172,24 @@ const Comment = () => {
                       {(currentPage - 1) * postsPerPage + index + 1}
                     </td>
                     <td aria-label="Customer Name">{post.name}</td>
-                    <td aria-label="Customer Nation">{post.nation}</td>
+                    <td aria-label="Customer Nation">
+                      {post.nation.toUpperCase()}
+                    </td>
                     <td aria-label="Customer Comment">{post.comment}</td>
+                    <td aria-label="Comment date">
+                      {moment(post.date).format("DD-MM-YYYY")}
+                    </td>
                     <td aria-label="Actions" className="actions">
                       <div>
                         <button
-                          className="btn btn-info btn-sm"
+                          className="btn btn-info btn-sm btn-edit"
                           onClick={() => handleEdit(post)}
                         >
                           Edit
                         </button>
 
                         <button
-                          className="btn btn-warning btn-sm"
+                          className="btn btn-warning btn-sm btn-del"
                           onClick={() => handleDelete(post)}
                         >
                           Delete
