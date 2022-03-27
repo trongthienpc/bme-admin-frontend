@@ -13,6 +13,10 @@ import {
   LOAD_COMMENT,
   UPDATE_COMMENT,
   DEL_COMMENT,
+  ADD_FOOD,
+  LOAD_FODD,
+  UPDATE_FOOD,
+  DEL_FOOD,
 } from "./constant";
 
 export const login = (payload) => ({
@@ -82,5 +86,25 @@ export const updateComment = (payload) => ({
 
 export const deleteComment = (payload) => ({
   type: DEL_COMMENT,
+  payload,
+});
+
+export const addFood = (payload) => ({
+  type: ADD_FOOD,
+  payload,
+});
+
+export const loadFood = (payload) => ({
+  type: LOAD_FODD,
+  payload,
+});
+
+export const updateFood = (payload) => ({
+  type: UPDATE_FOOD,
+  payload,
+});
+
+export const deleteFood = (payload) => ({
+  type: DEL_FOOD,
   payload,
 });

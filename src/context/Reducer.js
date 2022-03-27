@@ -16,6 +16,7 @@ import {
   LOAD_COMMENT,
   UPDATE_COMMENT,
   DEL_COMMENT,
+  DEL_FOOD,
 } from "./constant";
 const initState = {
   user: null,
@@ -28,6 +29,7 @@ const initState = {
   roomStyle: {},
   blogs: [],
   comments: [],
+  foods: [],
 };
 
 const roomStyleState = {
@@ -120,6 +122,12 @@ function Reducer(state, action) {
       return {
         ...state,
         comments: state.comments.filter((x) => x._id !== action.payload),
+      };
+
+    case DEL_FOOD:
+      return {
+        ...state,
+        foods: state.foods.filter((x) => x._id !== action.payload),
       };
     default:
       break;

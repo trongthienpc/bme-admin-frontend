@@ -37,3 +37,8 @@ export const ADD_COMMENT = "ADD_COMMENT";
 export const LOAD_COMMENT = "LOAD_COMMENT";
 export const UPDATE_COMMENT = "UPDATE_COMMENT";
 export const DEL_COMMENT = "DEL_COMMENT";
+
+export const ADD_FOOD = "ADD_FOOD";
+export const LOAD_FODD = "LOAD_FOOD";
+export const UPDATE_FOOD = "UPDATE_FOOD";
+export const DEL_FOOD = "DEL_FOOD";

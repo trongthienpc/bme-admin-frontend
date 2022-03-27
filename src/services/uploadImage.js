@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { Form, Image } from "react-bootstrap";
 
 const UploadImage = ({ setImageState, imageState }) => {
-  console.log(imageState);
   const [image, setImage] = useState(imageState);
 
   useEffect(() => {
@@ -37,4 +36,4 @@ const UploadImage = ({ setImageState, imageState }) => {
   );
 };
 
-export default UploadImage;
+export default React.memo(UploadImage);

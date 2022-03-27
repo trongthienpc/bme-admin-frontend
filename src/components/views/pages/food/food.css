@@ -1,0 +1,21 @@
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap");
+.food {
+  font-family: "Source Sans Pro", sans-serif;
+}
+
+.food-price {
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn-edit {
+  background-color: #95a5b5;
+  border: none;
+  border-radius: 0;
+}
+
+.btn-del {
+  background-color: #b5a176;
+  border: none;
+  border-radius: 0;
+}
