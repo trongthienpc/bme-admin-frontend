@@ -1,5 +1,5 @@
-// export const apiUrl = "https://bmeadmin.herokuapp.com/api";
-export const apiUrl = "http://localhost:5001/api";
+export const apiUrl = "https://bme-admin-backend.herokuapp.com/api";
+// export const apiUrl = "http://localhost:5001/api";
 export const LOCAL_STORAGE_TOKEN_NAME = "learnit-mern";
 
 export const POSTS_LOADED_SUCCESS = "POSTS_LOADED_SUCCESS";

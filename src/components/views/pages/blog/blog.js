@@ -103,6 +103,7 @@ const Blog = () => {
       //     setModalEditShow(true);
       //   });
       // console.log(res);
+      setModalEditShow(true);
       const res = await getById(id);
       if (res.data.success) {
         setOldEntity(() => {
