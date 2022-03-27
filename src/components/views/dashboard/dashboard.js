@@ -1,9 +1,15 @@
-import React from 'react';
+import React from "react";
+import Example from "./Example";
+import MyEditor from "./MyEditor";
 
 const Dashboard = () => {
-    return <div>
-        <h1>This is the home page</h1>
-    </div>;
+  return (
+    <div>
+      <h1>Test editor</h1>
+      {/* <MyEditor /> */}
+      <Example />
+    </div>
+  );
 };
 
 export default Dashboard;

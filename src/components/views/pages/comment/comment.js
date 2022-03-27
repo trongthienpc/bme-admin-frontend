@@ -176,7 +176,7 @@ const Comment = () => {
                       {post.nation.toUpperCase()}
                     </td>
                     <td aria-label="Customer Comment">{post.comment}</td>
-                    <td aria-label="Comment date">
+                    <td aria-label="Comment date" className="date">
                       {moment(post.date).format("DD-MM-YYYY")}
                     </td>
                     <td aria-label="Actions" className="actions">
