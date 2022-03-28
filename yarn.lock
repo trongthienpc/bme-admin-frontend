@@ -6037,9 +6037,9 @@
     "jest-cli" "^27.4.7"
 
 "jodit-react@^1.2.22":
-  "integrity" "sha512-Y8yfKloq0Iyw/YzcJnkBVUXXKA91Ln9QX00e78gnFoGLwKlXz9TgIMKUnejiNq502Hw7P0UoT4goduatd3EyXQ=="
-  "resolved" "https://registry.npmjs.org/jodit-react/-/jodit-react-1.2.22.tgz"
-  "version" "1.2.22"
+  "integrity" "sha512-19TcwFnW1fuTwRP7FwUu4pzXQ+vw4Aj2OfQMYXojz2mutxbg8MlcrHp/yj6a7rmBpCmUvMPu2HE+uKAr6FkpYw=="
+  "resolved" "https://registry.npmjs.org/jodit-react/-/jodit-react-1.2.23.tgz"
+  "version" "1.2.23"
   dependencies:
     "jodit" "^3.9.4"
 

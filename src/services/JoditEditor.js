@@ -1,10 +1,10 @@
-import React, { useState, useRef, useMemo } from "react";
-import JoditEditor from "jodit-react";
+import React, { useMemo, useRef, useState } from "react";
+import { default as Editor } from "jodit-react";
 
-const Example = ({}) => {
+const JoditEditor = ({ content, setContent }) => {
   const editor = useRef(null);
-  const [content, setContent] = useState("");
-  console.log(content);
+  //   const [content, setContent] = useState("");
+  //   console.log(content);
   const config = {
     readonly: false,
     uploader: {
@@ -14,7 +14,7 @@ const Example = ({}) => {
 
   return useMemo(
     () => (
-      <JoditEditor
+      <Editor
         ref={editor}
         value={content}
         config={config}
@@ -29,4 +29,4 @@ const Example = ({}) => {
   );
 };
 
-export default Example;
+export default JoditEditor;

@@ -1,4 +1,5 @@
 import React from "react";
+import JoditEditor from "../../../services/JoditEditor";
 import Example from "./Example";
 import MyEditor from "./MyEditor";
 
@@ -7,7 +8,8 @@ const Dashboard = () => {
     <div>
       <h1>Test editor</h1>
       {/* <MyEditor /> */}
-      <Example />
+      {/* <Example /> */}
+      <JoditEditor />
     </div>
   );
 };

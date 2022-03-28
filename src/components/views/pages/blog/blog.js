@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form, Image, Modal, Row, Col, Card } from "react-bootstrap";
+import {
+  Button,
+  Form,
+  Image,
+  Modal,
+  Row,
+  Col,
+  Card,
+  Spinner,
+} from "react-bootstrap";
 
 import {
   addEntity,
@@ -20,6 +29,7 @@ import { default as cloudAPI } from "../../../../services/cloudUpload";
 import { actions, useStore } from "../../../../context";
 import TinyMCE from "../../../../services/tinyMCE";
 import AddBlogModal from "./_addBlogModal";
+import JoditEditor from "../../../../services/JoditEditor";
 const Blog = () => {
   const [state, dispatch] = useStore();
   // init value
@@ -27,6 +37,8 @@ const Blog = () => {
   const [toEditor, setToEditor] = useState("default");
   const [blogs, setBlogs] = useState([]);
   const [imageState, setImageState] = useState();
+
+  const [loading, setLoading] = useState(false);
   const [entityState, setEntityState] = useState({
     name: "",
     quotes: "",
@@ -89,8 +101,8 @@ const Blog = () => {
     });
   };
 
-  const handleEdit = async (id) => {
-    setOldId(id);
+  const handleEdit = async (entity) => {
+    setOldId(entity._id);
     try {
       // const res = await getById(id)
       //   .then((response) => {
@@ -103,24 +115,29 @@ const Blog = () => {
       //     setModalEditShow(true);
       //   });
       // console.log(res);
+      setOldEntity(entity);
+      setEditorContent(entity.content);
+      setImageState(entity.avatar);
       setModalEditShow(true);
-      const res = await getById(id);
-      if (res.data.success) {
-        setOldEntity(() => {
-          const blog = res.data.response;
-          const blogJson = JSON.stringify(blog);
-          localStorage.setItem("blog", blogJson);
-          return blog;
-        });
-      }
+      // const res = await getById(id);
+      // if (res.data.success) {
+      //   // console.log(res.data);
+      //   setEditorContent(res.data.response.content);
+      //   setOldEntity(() => {
+      //     const blog = res.data.response;
+      //     const blogJson = JSON.stringify(blog);
+      //     localStorage.setItem("blog", blogJson);
+      //     return blog;
+      //   });
+      // }
     } catch (error) {
       console.log(error);
     }
-    console.log(editorContent);
+    // console.log(editorContent);
   };
   const handleEditSubmit = async (e) => {
     e.preventDefault();
-
+    setLoading(true);
     if (oldEntity.avatar !== imageState) {
       let secure_url = await cloudAPI(imageState);
       if (secure_url) {
@@ -147,6 +164,7 @@ const Blog = () => {
     setAction(!action);
     toast.success(UPDATE_SUCC);
     setImageState("");
+    setLoading(false);
   };
 
   // handle add
@@ -160,14 +178,17 @@ const Blog = () => {
   // delete blog
   const [delModal, setDelModal] = useState(false);
   const [delBlogId, setDelBlogId] = useState("");
-  const handleDelete = (id) => {
-    setDelBlogId(id);
+
+  const handleDelete = (entity) => {
+    console.log(entity);
+    setDelBlogId(entity._id);
     setDelModal(true);
   };
   const delBlogSubmit = async (id) => {
+    setLoading(true);
     if (id) {
       try {
-        const res = await deleteById(id);
+        const res = await deleteById(delBlogId);
         if (res.data.success) {
           dispatch(actions.delBlog(id));
           setDelModal(false);
@@ -179,6 +200,7 @@ const Blog = () => {
     }
     setAction(!action);
     setImageState("");
+    setLoading(false);
   };
 
   return (
@@ -197,13 +219,13 @@ const Blog = () => {
               <Card.Footer className="d-flex justify-content-between">
                 <Button
                   className="btn btn-primary m-2"
-                  onClick={() => handleEdit(blog._id)}
+                  onClick={() => handleEdit(blog)}
                 >
                   Edit
                 </Button>
                 <Button
                   className="btn btn-warning m-2"
-                  onClick={() => handleDelete(blog._id)}
+                  onClick={() => handleDelete(blog)}
                 >
                   Delete
                 </Button>
@@ -281,21 +303,39 @@ const Blog = () => {
             <Form.Group controlId="formEditor" className="mb-3">
               <Form.Label>Content</Form.Label>
               <div>
-                <TinyMCE
+                {/* <TinyMCE
                   setEditorContent={setEditorContent}
                   editorContent={editorContent}
+                /> */}
+
+                <JoditEditor
+                  content={editorContent}
+                  setContent={setEditorContent}
                 />
               </div>
             </Form.Group>
 
-            <Button
-              variant="primary"
-              type="submit"
-              //   onClick={handleAddSubmit}
-              disabled={imageState ? false : true}
-            >
-              Submit
-            </Button>
+            {!loading ? (
+              <Button
+                variant="primary"
+                type="submit"
+                //   onClick={handleAddSubmit}
+                disabled={imageState ? false : true}
+              >
+                Update
+              </Button>
+            ) : (
+              <Button variant="primary" disabled>
+                <Spinner
+                  as="span"
+                  animation="grow"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                />
+                Updating ...
+              </Button>
+            )}
           </Form>
         </Modal.Body>
       </Modal>
@@ -317,12 +357,26 @@ const Blog = () => {
           >
             Cancel
           </Button>
-          <Button
-            className="btn btn-warning m-2"
-            onClick={() => delBlogSubmit(delBlogId)}
-          >
-            Delete
-          </Button>
+
+          {!loading ? (
+            <Button
+              className="btn btn-warning m-2"
+              onClick={() => delBlogSubmit(delBlogId)}
+            >
+              Delete
+            </Button>
+          ) : (
+            <Button variant="primary" disabled>
+              <Spinner
+                as="span"
+                animation="grow"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+              />
+              Deleting ...
+            </Button>
+          )}
         </Modal.Footer>
       </Modal>
       <ToastContainer />

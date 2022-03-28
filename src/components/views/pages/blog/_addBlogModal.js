@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Form, Modal } from "react-bootstrap";
+import { Button, Form, Modal, Spinner } from "react-bootstrap";
 import { useStore } from "../../../../context";
 import { toast, ToastContainer } from "react-toastify";
 import { default as cloudAPI } from "../../../../services/cloudUpload";
@@ -7,10 +7,12 @@ import TinyMCE from "../../../../services/tinyMCE";
 import { addEntity } from "../../../../services/blogServices";
 import { ADD_SUCC } from "../../../../context/constant";
 import UploadImage from "../../../../services/uploadImage";
+import JoditEditor from "../../../../services/JoditEditor";
 
 const AddBlogModal = ({ show, setlgShow, action, setAction, setAddStatus }) => {
   const [state, dispatch] = useStore();
 
+  const [submitStatus, setSubmitStatus] = useState(false);
   const [editorContent, setEditorContent] = useState("");
   const [imageState, setImageState] = useState();
   const [entityState, setEntityState] = useState({
@@ -35,6 +37,7 @@ const AddBlogModal = ({ show, setlgShow, action, setAction, setAddStatus }) => {
 
   const handleAddSubmit = async (e) => {
     e.preventDefault();
+    setSubmitStatus(true);
     if (!imageState) return toast.warn("Please input blog avatar");
     // if (editorRef.current)
     //   setEntityState({
@@ -64,6 +67,7 @@ const AddBlogModal = ({ show, setlgShow, action, setAction, setAddStatus }) => {
     }
     setAction(!action);
     setImageState("");
+    setSubmitStatus(false);
   };
   return (
     <>
@@ -111,22 +115,35 @@ const AddBlogModal = ({ show, setlgShow, action, setAction, setAddStatus }) => {
               <Form.Label>Content</Form.Label>
               <div>
                 {/* tinyMCE */}
-                <TinyMCE
-                  setEditorContent={setEditorContent}
-
-                  // setEditorContent={setEditorContent}
+                {/* <TinyMCE setEditorContent={setEditorContent} /> */}
+                <JoditEditor
+                  content={editorContent}
+                  setContent={setEditorContent}
                 />
               </div>
             </Form.Group>
 
-            <Button
-              variant="primary"
-              type="submit"
-              //   onClick={handleAddSubmit}
-              disabled={imageState ? false : true}
-            >
-              Submit
-            </Button>
+            {!submitStatus ? (
+              <Button
+                variant="primary"
+                type="submit"
+                //   onClick={handleAddSubmit}
+                disabled={imageState ? false : true}
+              >
+                Submit
+              </Button>
+            ) : (
+              <Button variant="primary" disabled>
+                <Spinner
+                  as="span"
+                  animation="grow"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                />
+                Loading...
+              </Button>
+            )}
           </Form>
         </Modal.Body>
       </Modal>
