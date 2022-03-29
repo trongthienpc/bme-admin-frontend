@@ -151,7 +151,6 @@ const Blog = () => {
     e.preventDefault();
     setIsUpdating(true);
     console.log(oldEntity);
-    dispatch(actions.updateBlog(oldEntity));
 
     if (oldEntity.avatar !== imageState) {
       let res = await cloudAPI(imageState);
@@ -162,18 +161,21 @@ const Blog = () => {
       }
     } else oldEntity.avatar = imageState;
 
+    oldEntity.content = editorContent;
+    dispatch(actions.updateBlog(oldEntity));
+
     const formData = new FormData();
     formData.append("name", oldEntity.name);
     formData.append("avatar", oldEntity.avatar);
     formData.append("quotes", oldEntity.quotes);
-    formData.append("content", editorContent);
+    formData.append("content", oldEntity.content);
     formData.append("public_id", oldEntity.public_id);
 
     try {
       const res = await updateEntity(oldId, formData);
-      if (res.data.success) {
-        dispatch(actions.updateBlog(res.data));
-      }
+      // if (res.data.success) {
+      //   dispatch(actions.updateBlog(res.data));
+      // }
     } catch (err) {
       console.log(err);
     }

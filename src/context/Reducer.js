@@ -79,11 +79,13 @@ function Reducer(state, action) {
         blogs: state.blogs.filter((blog) => blog._id !== action.payload),
       };
     case UPDATE_BLOG:
+      let newBlogs = state.blogs.filter(
+        (blog) => blog._id !== action.payload._id
+      );
+
       return {
         ...state,
-        blogs: state.blogs.map((blog) =>
-          blog._id === action.payload._id ? action.payload : blog
-        ),
+        blogs: [...newBlogs, action.payload],
       };
     case LOAD_ROOM_STYLE:
       return {
