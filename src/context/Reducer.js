@@ -17,6 +17,8 @@ import {
   UPDATE_COMMENT,
   DEL_COMMENT,
   DEL_FOOD,
+  ADD_BLOG,
+  LOAD_BLOG,
 } from "./constant";
 const initState = {
   user: null,
@@ -28,6 +30,7 @@ const initState = {
   roomStyles: [],
   roomStyle: {},
   blogs: [],
+  blog: {},
   comments: [],
   foods: [],
 };
@@ -39,11 +42,6 @@ const roomStyleState = {
 
 function Reducer(state, action) {
   switch (action.type) {
-    case UPDATE_BLOG:
-      return {
-        ...state,
-        blogs: [...state.blogs],
-      };
     case UPDATE_ROOM:
       return {
         ...state,
@@ -64,12 +62,29 @@ function Reducer(state, action) {
         rooms: state.rooms.filter((room) => room.id !== action.payload),
       };
 
+    case LOAD_BLOG:
+      return {
+        ...state,
+        blogs: action.payload,
+      };
+    case ADD_BLOG:
+      return {
+        ...state,
+        blogs: [...state.blogs, action.payload],
+      };
+
     case DELETE_BLOG:
       return {
         ...state,
         blogs: state.blogs.filter((blog) => blog._id !== action.payload),
       };
-
+    case UPDATE_BLOG:
+      return {
+        ...state,
+        blogs: state.blogs.map((blog) =>
+          blog._id === action.payload._id ? action.payload : blog
+        ),
+      };
     case LOAD_ROOM_STYLE:
       return {
         ...state,

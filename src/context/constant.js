@@ -1,5 +1,5 @@
-export const apiUrl = "https://bme-admin-backend.herokuapp.com/api";
-// export const apiUrl = "http://localhost:5001/api";
+// export const apiUrl = "https://bme-admin-backend.herokuapp.com/api";
+export const apiUrl = "http://localhost:5001/api";
 export const LOCAL_STORAGE_TOKEN_NAME = "learnit-mern";
 
 export const POSTS_LOADED_SUCCESS = "POSTS_LOADED_SUCCESS";
@@ -28,6 +28,7 @@ export const UPDATE_SUCC = "Update successfully";
 export const DEL_SUCC = "Delete successfully";
 export const SER_ERROR = "Server has an error";
 
+export const ADD_BLOG = "ADD_BLOG";
 export const UPDATE_BLOG = "UPDATE_BLOG";
 export const LOAD_BLOG = "LOAD_BLOG";
 export const DELETE_BLOG = "DELETE_BLOG";

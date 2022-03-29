@@ -8,13 +8,13 @@
   justify-content: space-between;
 }
 
-.btn-edit {
+.food .btn-edit {
   background-color: #95a5b5;
   border: none;
   border-radius: 0;
 }
 
-.btn-del {
+.food .btn-del {
   background-color: #b5a176;
   border: none;
   border-radius: 0;

@@ -1,0 +1,109 @@
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap");
+.blogs {
+  font-family: "Source Sans Pro", sans-serif;
+}
+
+.blogs .btn-edit {
+  border: none;
+  background-color: #95a5b5;
+}
+
+.btn-edit:hover {
+  background-color: #53779c;
+}
+
+.blogs .btn-del {
+  border: none;
+  background-color: #be9d55;
+}
+
+.btn-del:hover {
+  background-color: #e2aa2f;
+  color: #fff;
+}
+
+.blogs .loading {
+  text-align: center;
+}
+
+/**
+ * ==============================================
+ * Dot Pulse
+ * ==============================================
+ */
+.dot-pulse {
+  position: relative;
+  left: -9999px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #e29910;
+  color: #e29910;
+  box-shadow: 9999px 0 0 -5px #e29910;
+  animation: dotPulse 1.5s infinite linear;
+  animation-delay: 0.25s;
+}
+
+.dot-pulse::before,
+.dot-pulse::after {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #e29910;
+  color: #e29910;
+}
+
+.dot-pulse::before {
+  box-shadow: 9984px 0 0 -5px #e29910;
+  animation: dotPulseBefore 1.5s infinite linear;
+  animation-delay: 0s;
+}
+
+.dot-pulse::after {
+  box-shadow: 10014px 0 0 -5px #e29910;
+  animation: dotPulseAfter 1.5s infinite linear;
+  animation-delay: 0.5s;
+}
+
+@keyframes dotPulseBefore {
+  0% {
+    box-shadow: 9984px 0 0 -5px #e29910;
+  }
+  30% {
+    box-shadow: 9984px 0 0 2px #e29910;
+  }
+  60%,
+  100% {
+    box-shadow: 9984px 0 0 -5px #e29910;
+  }
+}
+
+@keyframes dotPulse {
+  0% {
+    box-shadow: 9999px 0 0 -5px #e29910;
+  }
+  30% {
+    box-shadow: 9999px 0 0 2px #e29910;
+  }
+  60%,
+  100% {
+    box-shadow: 9999px 0 0 -5px #e29910;
+  }
+}
+
+@keyframes dotPulseAfter {
+  0% {
+    box-shadow: 10014px 0 0 -5px #e29910;
+  }
+  30% {
+    box-shadow: 10014px 0 0 2px #e29910;
+  }
+  60%,
+  100% {
+    box-shadow: 10014px 0 0 -5px #e29910;
+  }
+}

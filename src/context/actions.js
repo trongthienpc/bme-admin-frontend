@@ -17,6 +17,8 @@ import {
   LOAD_FODD,
   UPDATE_FOOD,
   DEL_FOOD,
+  ADD_BLOG,
+  LOAD_BLOG,
 } from "./constant";
 
 export const login = (payload) => ({
@@ -61,6 +63,16 @@ export const findRoom = (payload) => ({
 
 export const updateRoom = (payload) => ({
   type: UPDATE_ROOM,
+  payload,
+});
+
+export const loadblog = (payload) => ({
+  type: LOAD_BLOG,
+  payload,
+});
+
+export const addBlog = (payload) => ({
+  type: ADD_BLOG,
   payload,
 });
 

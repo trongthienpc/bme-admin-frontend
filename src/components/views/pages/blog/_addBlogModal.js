@@ -1,15 +1,14 @@
 import React, { useState } from "react";
 import { Button, Form, Modal, Spinner } from "react-bootstrap";
-import { useStore } from "../../../../context";
+import { actions, useStore } from "../../../../context";
 import { toast, ToastContainer } from "react-toastify";
 import { default as cloudAPI } from "../../../../services/cloudUpload";
-import TinyMCE from "../../../../services/tinyMCE";
 import { addEntity } from "../../../../services/blogServices";
 import { ADD_SUCC } from "../../../../context/constant";
 import UploadImage from "../../../../services/uploadImage";
 import JoditEditor from "../../../../services/JoditEditor";
 
-const AddBlogModal = ({ show, setlgShow, action, setAction, setAddStatus }) => {
+const AddBlogModal = ({ show, setlgShow, setAddStatus }) => {
   const [state, dispatch] = useStore();
 
   const [submitStatus, setSubmitStatus] = useState(false);
@@ -19,6 +18,7 @@ const AddBlogModal = ({ show, setlgShow, action, setAction, setAddStatus }) => {
     name: "blog name",
     quotes: "blog quotes ....",
     avatar: "",
+    public_id: "",
     content: "",
   });
 
@@ -39,33 +39,31 @@ const AddBlogModal = ({ show, setlgShow, action, setAction, setAddStatus }) => {
     e.preventDefault();
     setSubmitStatus(true);
     if (!imageState) return toast.warn("Please input blog avatar");
-    // if (editorRef.current)
-    //   setEntityState({
-    //     ...entityState,
-    //     content: editorRef.current.getContent(),
-    //   });
 
-    let secure_url = await cloudAPI(imageState);
-    if (secure_url) entityState.avatar = secure_url;
+    let data = await cloudAPI(imageState);
+    if (data) {
+      entityState.avatar = data.secure_url;
+      entityState.public_id = data.public_id;
+    }
     const formData = new FormData();
-    console.log(editorContent);
+
     entityState.content = editorContent;
     formData.append("content", entityState.content);
     formData.append("name", entityState.name);
     formData.append("quotes", entityState.quotes);
     formData.append("avatar", entityState.avatar);
+    formData.append("public_id", entityState.public_id);
     try {
-      const response = await addEntity(formData);
-
-      if (response.data.success) {
+      await addEntity(formData).then((res) => {
+        dispatch(actions.addBlog(res.data.data));
         toast.success(ADD_SUCC);
-        setlgShow(false);
-      }
+      });
     } catch (error) {
       toast.error("Have error, please do it later");
       console.log(error);
     }
-    setAction(!action);
+    setlgShow(false);
+    // setAction(!action);
     setImageState("");
     setSubmitStatus(false);
   };
@@ -125,7 +123,7 @@ const AddBlogModal = ({ show, setlgShow, action, setAction, setAddStatus }) => {
 
             {!submitStatus ? (
               <Button
-                variant="primary"
+                variant="secondary"
                 type="submit"
                 //   onClick={handleAddSubmit}
                 disabled={imageState ? false : true}
@@ -133,15 +131,15 @@ const AddBlogModal = ({ show, setlgShow, action, setAction, setAddStatus }) => {
                 Submit
               </Button>
             ) : (
-              <Button variant="primary" disabled>
+              <Button variant="secondary" disabled>
+                Submiting{" "}
                 <Spinner
                   as="span"
-                  animation="grow"
+                  animation="border"
                   size="sm"
                   role="status"
                   aria-hidden="true"
                 />
-                Loading...
               </Button>
             )}
           </Form>
@@ -152,4 +150,4 @@ const AddBlogModal = ({ show, setlgShow, action, setAction, setAddStatus }) => {
   );
 };
 
-export default AddBlogModal;
+export default React.memo(AddBlogModal);

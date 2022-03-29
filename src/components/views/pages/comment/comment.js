@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Col, Container, Row, Table } from "react-bootstrap";
+import { Col, Container, Row, Spinner, Table } from "react-bootstrap";
 import { toast, ToastContainer } from "react-toastify";
 import { SER_ERROR } from "../../../../context/constant";
 import { getAll } from "../../../../services/commentService";
@@ -50,6 +50,8 @@ const Comment = () => {
     getAllComments();
   }, [action]);
 
+  console.log("call comment");
+
   // search
   useEffect(() => {
     const result = !search
@@ -74,7 +76,11 @@ const Comment = () => {
     setEditStatus(true);
   };
   if (loading) {
-    return <h2>Loading...</h2>;
+    return (
+      <Spinner animation="border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </Spinner>
+    );
   }
 
   // delete comment

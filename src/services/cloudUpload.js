@@ -12,7 +12,7 @@ const dataCloud = async (file) => {
       return response.json();
     })
     .then((data) => {
-      return data.secure_url;
+      return data;
     })
     .catch((err) => console.log(err));
   return res;
