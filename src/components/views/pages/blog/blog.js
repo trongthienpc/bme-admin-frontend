@@ -24,6 +24,7 @@ import { actions, useStore } from "../../../../context";
 
 import AddBlogModal from "./_addBlogModal";
 import JoditEditor from "../../../../services/JoditEditor";
+import UploadImage from "../../../../services/uploadImage";
 const Blog = () => {
   const [state, dispatch] = useStore();
 
@@ -315,7 +316,11 @@ const Blog = () => {
 
               <Form.Group controlId="formAvatar" className="mb-3">
                 <Form.Label>Avatar</Form.Label>
-                <Form.Control type="file" name="image" onChange={handleImage} />
+                <UploadImage
+                  setImageState={setImageState}
+                  imageState={imageState}
+                />
+                {/* <Form.Control type="file" name="image" onChange={handleImage} />
 
                 {imageState && (
                   <Image
@@ -326,7 +331,7 @@ const Blog = () => {
                     className="mb-2"
                     hidden={imageState ? false : true}
                   />
-                )}
+                )} */}
               </Form.Group>
 
               <Form.Group controlId="formEditor" className="mb-3">
